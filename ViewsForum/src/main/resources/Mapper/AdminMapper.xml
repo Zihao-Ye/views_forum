@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.viewsforum.viewsforum.Dao.AdminDao">
+    <!-- 根据用户ID查询是否是系统管理员-->
+    <select id="findSystemAdminByUserID" parameterType="Integer" resultType="Admin">
+        select *
+        from admin
+        where userID=#{userID} and admin_type=0
+    </select>
+</mapper>
