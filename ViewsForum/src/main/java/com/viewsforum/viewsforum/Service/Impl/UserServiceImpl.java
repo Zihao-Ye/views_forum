@@ -41,4 +41,8 @@ public class UserServiceImpl implements UserService {
         return userDao.findUserByUserNameAndEmail(userName,email);
     }
 
+    // 根据用户ID查询用户
+    public User findUserByUserID(Integer userID){
+        return userDao.findUserByUserID(userID);
+    }
 }

@@ -36,4 +36,10 @@
         from user
         where user_name=#{userName} and email=#{email}
     </select>
+    <!-- 根据用户ID查询用户-->
+    <select id="findUserByUserID" parameterType="Integer" resultType="User">
+        select *
+        from user
+        where userid=#{userID}
+    </select>
 </mapper>

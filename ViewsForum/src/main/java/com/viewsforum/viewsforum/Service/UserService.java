@@ -20,4 +20,7 @@ public interface UserService {
 
     // 根据用户名与邮箱查询用户
     User findUserByUserNameAndEmail(String userName,String email);
+
+    // 根据用户ID查询用户
+    User findUserByUserID(Integer userID);
 }

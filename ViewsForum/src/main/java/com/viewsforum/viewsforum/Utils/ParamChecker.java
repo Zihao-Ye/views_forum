@@ -11,6 +11,10 @@ public class ParamChecker {
         return input != null;
     }
 
+    public boolean checkNotNull(Integer input){
+        return input!=null;
+    }
+
     public boolean checkUserName(String userName){
         if(!checkNotNull(userName) || userName.length()<=4 || userName.length()>=21){
             return false;

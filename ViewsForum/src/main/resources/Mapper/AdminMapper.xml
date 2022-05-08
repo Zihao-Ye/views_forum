@@ -7,4 +7,68 @@
         from admin
         where userID=#{userID} and admin_type=0
     </select>
+    <!-- 发送申请-->
+    <insert id="addNewAdminApply" parameterType="AdminApply">
+        insert into admin_apply(applyid, userid, topicid, apply_time)
+        values (#{applyID},#{userID},#{topicID},#{applyTime})
+    </insert>
+    <!-- 根据用户ID与主题ID查询是否已申请主题管理员-->
+    <select id="findApplyByUserIDAndTopicID" parameterType="Admin" resultType="AdminApply">
+        select *
+        from admin_apply
+        where userid=#{userID} and topicid=#{topicID} and is_finish=0
+    </select>
+    <!-- 根据用户ID与主题ID查询是否是主题管理员-->
+    <select id="findTopicAdminByUserIDAndTopicID" parameterType="Admin" resultType="Admin">
+        select *
+        from admin
+        where userid=#{userID} and topicid=#{topicID}
+    </select>
+    <!-- 根据主题ID查询按时间顺序查询管理员申请-->
+    <select id="findAllAdminApplyByTopicID" parameterType="Integer" resultType="AdminApply">
+        select *
+        from admin_apply
+        where topicid=#{topicID} and is_finish=0
+        order by apply_time
+    </select>
+    <!-- 根据用户ID与主题ID查询是否是主题创建者-->
+    <select id="findTopicCreatorByUserIDAndTopicID" parameterType="Admin" resultType="Admin">
+        select *
+        from admin
+        where userid=#{userID} and topicid=#{topicID} and admin_type=1
+    </select>
+    <!-- 根据申请ID查询申请-->
+    <select id="findApplyByApplyID" parameterType="Integer" resultType="AdminApply">
+        select *
+        from admin_apply
+        where applyid=#{applyID}
+    </select>
+    <!-- 根据申请ID设置申请已处理-->
+    <update id="finishAdminApplyByApplyID" parameterType="Integer">
+        update admin_apply
+        set is_finish=1
+        where applyid=#{applyID}
+    </update>
+    <!-- 添加管理员-->
+    <insert id="addNewTopicAdmin" parameterType="Admin">
+        insert into admin(adminid, userid, topicid, admin_type)
+        values (#{adminID},#{userID},#{topicID},#{adminType})
+    </insert>
+    <!-- 根据主题ID获取管理员-->
+    <select id="findAllAdminByTopicID" parameterType="Integer" resultType="Admin">
+        select *
+        from admin
+        where topicid=#{topicID} and admin_type=2
+    </select>
+    <!-- 根据管理员ID查询管理员-->
+    <select id="findAdminByAdminID" parameterType="Integer" resultType="Admin">
+        select *
+        from admin
+        where adminid=#{adminID}
+    </select>
+    <!-- 根据管理员ID取消管理员身份-->
+    <delete id="deleteAdmin" parameterType="Integer">
+        delete from admin
+        where adminid=#{adminID}
+    </delete>
 </mapper>

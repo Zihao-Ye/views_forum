@@ -1,8 +1,12 @@
 package com.viewsforum.viewsforum.Controller;
 
+import com.viewsforum.viewsforum.Entity.AdminApply;
+import com.viewsforum.viewsforum.Entity.SystemMessage;
+import com.viewsforum.viewsforum.Entity.Topic;
 import com.viewsforum.viewsforum.Entity.User;
 import com.viewsforum.viewsforum.Service.AdminService;
 import com.viewsforum.viewsforum.Service.EmailService;
+import com.viewsforum.viewsforum.Service.SystemMessageService;
 import com.viewsforum.viewsforum.Service.UserService;
 import com.viewsforum.viewsforum.Utils.ParamChecker;
 import io.swagger.annotations.Api;
@@ -19,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.nio.charset.StandardCharsets;
+import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -36,6 +41,8 @@ public class UserController {
 
     @Autowired
     private AdminService adminService;
+
+
 
     @PostMapping("/register")
     @ApiOperation("用户注册")
@@ -83,6 +90,7 @@ public class UserController {
                 user.setPassword(password);
                 user.setEmail(email);
                 userService.addNewUser(user);
+                log.info("");
                 map.put("success",true);
                 map.put("message","用户注册成功");
             }
@@ -188,7 +196,7 @@ public class UserController {
     @PostMapping("/verify")
     @ApiOperation("验证验证码")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "userID",value="用户ID",required = true,dataType = "Integer"),
+            @ApiImplicitParam(name = "userID",value="用户ID",required = true,dataType = "int"),
             @ApiImplicitParam(name = "password",value="密码",required = true,dataType = "String"),
             @ApiImplicitParam(name = "rePassword",value = "重新确认密码",required = true,dataType = "String"),
             @ApiImplicitParam(name = "code",value = "验证码",required = true,dataType = "String")
@@ -197,13 +205,13 @@ public class UserController {
         Map<String,Object> map=new HashMap<>();
         try{
             // 格式检查
-            if(!paramChecker.checkPassword(password)){
+            if(!paramChecker.checkPassword(password)||!paramChecker.checkNotNull(rePassword)||!paramChecker.checkNotNull(code)){
                 map.put("success",false);
                 map.put("msg","格式错误");
                 return map;
             }
 
-            if(!password.equals(rePassword)){
+            if(!rePassword.equals(password)){
                 map.put("success",false);
                 map.put("msg","两次密码输入不一致");
             }
@@ -222,7 +230,7 @@ public class UserController {
                 map.put("msg","修改密码成功");
             }
         }catch (Exception e){
-            e.printStackTrace();
+            log.error(e.getMessage());
             map.put("success",false);
             map.put("msg","INTERNAL_ERROR");
         }
@@ -246,5 +254,19 @@ public class UserController {
         return map;
     }
 
+    //todo 修改个人信息
 
+    //todo 关注
+
+    //todo 取消关注
+
+    //todo 拉黑
+
+    //todo 取消拉黑
+
+    //todo 关注的主题
+
+    //todo 发布的主题
+
+    //todo 发布的帖子
 }
