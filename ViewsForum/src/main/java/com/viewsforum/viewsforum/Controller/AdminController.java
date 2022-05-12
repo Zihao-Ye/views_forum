@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.Map;
 
 @Slf4j
-@Api("管理员操作相关接口")
+@Api(tags = "管理员操作相关接口")
 @RestController("/admin")
 public class AdminController {
     private final ParamChecker paramChecker=new ParamChecker();

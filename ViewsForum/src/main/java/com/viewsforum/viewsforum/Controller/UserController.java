@@ -28,7 +28,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Slf4j
-@Api("用户操作相关接口")
+@Api(tags = "用户操作相关接口")
 @RestController("/user")
 public class UserController {
     private final ParamChecker paramChecker=new ParamChecker();

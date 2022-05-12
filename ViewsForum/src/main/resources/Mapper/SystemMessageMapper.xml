@@ -4,7 +4,7 @@
     <!-- 添加系统消息-->
     <insert id="addNewSystemMessage" parameterType="SystemMessage">
         insert into system_message(system_messageid, message_content, userid, message_type,  message_time)
-        values (#{systemMessageID},#{,essageContent},#{userID},#{messageType},#{messageTime})
+        values (#{systemMessageID},#{messageContent},#{userID},#{messageType},#{messageTime})
     </insert>
     <!-- 已读消息-->
     <update id="readOneSysTemMessage" parameterType="Integer">

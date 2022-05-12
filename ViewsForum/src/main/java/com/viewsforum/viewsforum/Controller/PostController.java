@@ -5,7 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
-@Api("帖子相关接口")
+@Api(tags = "帖子相关接口")
 @RestController("/post")
 public class PostController {
     //todo 创建帖子

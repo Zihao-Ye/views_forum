@@ -24,7 +24,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Slf4j
-@Api("主题相关接口")
+@Api(tags = "主题相关接口")
 @RestController("/topic")
 public class TopicController {
     private final ParamChecker paramChecker=new ParamChecker();
