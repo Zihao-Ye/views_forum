@@ -23,5 +23,6 @@
         select *
         from system_message
         where userid=#{useID} and message_type=#{messageType} and is_read=0
+        order by message_time
     </select>
 </mapper>
