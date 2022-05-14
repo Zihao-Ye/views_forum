@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.viewsforum.viewsforum.Dao.PostDao">
+    <!-- 获取主题下帖子列表-->
+    <select id="getPostListByTopicID" parameterType="Integer" resultType="Post">
+        select *
+        from post
+        where topicid=#{topicID} and is_delete=0
+        order by post_time
+    </select>
+</mapper>

@@ -1,6 +1,7 @@
 package com.viewsforum.viewsforum.Service;
 
 import com.viewsforum.viewsforum.Entity.Topic;
+import com.viewsforum.viewsforum.Entity.TopicFollow;
 import com.viewsforum.viewsforum.Entity.User;
 
 public interface TopicService {
@@ -9,4 +10,19 @@ public interface TopicService {
 
     // 根据主题ID获取创建者
     User findCreatorByTopicID(Integer topicID);
+
+    // 查询是否关注
+    TopicFollow findTopicFollowByFollowerIDAndTopicID(Integer followerID,Integer topicID);
+
+    // 添加关注主题
+    void followTopic(TopicFollow topicFollow);
+
+    // 取消关注主题
+    void unFollowTopic(Integer followerID,Integer topicID);
+
+    // 主题关注数+1
+    void addTopicFollowNum(Integer topicID);
+
+    // 主题关注数-1
+    void minusTopicFollowNum(Integer topicID);
 }

@@ -15,4 +15,32 @@
                 as found
             )
     </select>
+    <!-- 查询是否关注-->
+    <select id="findTopicFollowByFollowerIDAndTopicID" parameterType="TopicFollow" resultType="TopicFollow">
+        select *
+        from topic_follow
+        where followerid=#{followerID} and topicid=#{topicID}
+    </select>
+    <!-- 添加关注主题-->
+    <insert id="followTopic" parameterType="TopicFollow">
+        insert into topic_follow(topic_followid, topicid, followerid, follow_time)
+        values (#{topicFollowID},#{topicID},#{followerID},#{followTime})
+    </insert>
+    <!-- 取消关注主题-->
+    <delete id="unFollowTopic" parameterType="TopicFollow">
+        delete from topic_follow
+        where followerid=#{followerID} and topicid=#{topicID}
+    </delete>
+    <!-- 主题关注数+1-->
+    <update id="addTopicFollowNum" parameterType="Integer">
+        update topic
+        set follow_num=follow_num+1
+        where topicid=#{topicID}
+    </update>
+    <!-- 主题关注数-1-->
+    <update id="minusTopicFollowNum" parameterType="Integer">
+        update topic
+        set follow_num=follow_num-1
+        where topicid=#{topicID}
+    </update>
 </mapper>
