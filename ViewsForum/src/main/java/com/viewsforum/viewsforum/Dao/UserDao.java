@@ -1,7 +1,12 @@
 package com.viewsforum.viewsforum.Dao;
 
+import com.viewsforum.viewsforum.Entity.Black;
+import com.viewsforum.viewsforum.Entity.TopicFollow;
 import com.viewsforum.viewsforum.Entity.User;
+import com.viewsforum.viewsforum.Entity.UserFollow;
 import org.apache.ibatis.annotations.Mapper;
+
+import java.util.List;
 
 @Mapper
 public interface UserDao {
@@ -25,4 +30,31 @@ public interface UserDao {
 
     // 根据用户ID查询用户
     User findUserByUserID(Integer userID);
+
+    // 根据关注者ID与被关注者ID查询关注情况
+    UserFollow findUserFollowByFollowerIDAndFollowedID(Integer followerID, Integer followedID);
+
+    // 添加关注
+    void followUser(UserFollow userFollow);
+
+    // 取消关注用户
+    void unFollowUser(Integer userFollowID);
+
+    // 根据拉黑者ID与被拉黑者ID查询拉黑情况
+    Black findBlackByBlackerIDAndBlackedID(Integer blackerID, Integer blackedID);
+
+    // 拉黑用户
+    void blackoutUser(Black black);
+
+    // 取消拉黑用户
+    void unBlackoutUser(Integer blackID);
+
+    // 获取关注用户列表
+    List<UserFollow> getUserFollowList(Integer followerID);
+
+    // 获取拉黑用户列表
+    List<Black> getBlackList(Integer blackerID);
+
+    // 获取关注主题列表
+    List<TopicFollow> getTopicFollowList(Integer followerID);
 }

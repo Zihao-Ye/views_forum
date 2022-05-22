@@ -1,13 +1,7 @@
 package com.viewsforum.viewsforum.Controller;
 
-import com.viewsforum.viewsforum.Entity.AdminApply;
-import com.viewsforum.viewsforum.Entity.SystemMessage;
-import com.viewsforum.viewsforum.Entity.Topic;
-import com.viewsforum.viewsforum.Entity.User;
-import com.viewsforum.viewsforum.Service.AdminService;
-import com.viewsforum.viewsforum.Service.EmailService;
-import com.viewsforum.viewsforum.Service.SystemMessageService;
-import com.viewsforum.viewsforum.Service.UserService;
+import com.viewsforum.viewsforum.Entity.*;
+import com.viewsforum.viewsforum.Service.*;
 import com.viewsforum.viewsforum.Utils.ParamChecker;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -16,6 +10,7 @@ import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.DigestUtils;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -24,7 +19,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.nio.charset.StandardCharsets;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Slf4j
@@ -41,6 +38,14 @@ public class UserController {
 
     @Autowired
     private AdminService adminService;
+
+    @Autowired
+    private SystemMessageService systemMessageService;
+
+    @Autowired
+    private TopicService topicService;
+
+    @Autowired PostService postService;
 
 
 
@@ -254,19 +259,252 @@ public class UserController {
         return map;
     }
 
+    @PostMapping("/followUser")
+    @ApiOperation("关注用户")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "followerID",value = "关注者ID",required = true,dataType = "int"),
+            @ApiImplicitParam(name = "followedID",value = "被关注者ID",required = true,dataType = "int")
+    })
+    public Map<String,Object> followUser(@RequestParam Integer followerID,@RequestParam Integer followedID){
+        Map<String,Object> map=new HashMap<>();
+        try {
+            // 检查是否关注
+            if(userService.findUserFollowByFollowerIDAndFollowedID(followerID,followedID)!=null){
+                map.put("success",false);
+                map.put("msg","已关注");
+                return map;
+            }
+            // 添加关注
+            User follower = userService.findUserByUserID(followerID);
+            User followed = userService.findUserByUserID(followedID);
+            UserFollow userFollow = new UserFollow();
+            userFollow.setFollowerID(followerID);
+            userFollow.setFollowedID(followedID);
+            userFollow.setFollowTime(new Timestamp(System.currentTimeMillis()));
+            userService.followUser(userFollow);
+
+            // 发送系统消息
+            SystemMessage systemMessage=new SystemMessage();
+            systemMessage.setUserID(followedID);
+            systemMessage.setMessageType(3);
+            systemMessage.setMessageTime(new Timestamp(System.currentTimeMillis()));
+            systemMessage.setMessageContent(follower.getUserName()+" 关注了您");
+            systemMessageService.addNewSystemMessage(systemMessage);
+            map.put("success",true);
+        }catch (Exception e){
+            log.error(e.getMessage());
+            map.put("success",false);
+            map.put("msg","INTERNAL_ERROR");
+        }
+        return map;
+    }
+
+    @PostMapping("/unFollowUser")
+    @ApiOperation("取消关注用户")
+    @ApiImplicitParam(name = "userFollowID",value = "用户关注ID",required = true,dataType = "int")
+    public Map<String,Object> unFollowUser(@RequestParam Integer userFollowID){
+        Map<String,Object> map=new HashMap<>();
+        try {
+            userService.unFollowUser(userFollowID);
+            map.put("success",true);
+        }catch (Exception e){
+            log.error(e.getMessage());
+            map.put("success",false);
+            map.put("msg","INTERNAL_ERROR");
+        }
+        return map;
+    }
+
+    @PostMapping("/blackoutUser")
+    @ApiOperation("拉黑")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "blackerID",value = "拉黑者ID",required = true,dataType = "int"),
+            @ApiImplicitParam(name = "blackedID",value = "被拉黑者ID",required = true,dataType = "int")
+    })
+    public Map<String,Object> blackoutUser(@RequestParam Integer blackerID,@RequestParam Integer blackedID){
+        Map<String,Object> map=new HashMap<>();
+        try {
+            if(userService.findBlackByBlackerIDAndBlackedID(blackerID,blackedID)!=null){
+                map.put("success",false);
+                map.put("msg","已拉黑");
+                return map;
+            }
+            Black black=new Black();
+            black.setBlackerID(blackerID);
+            black.setBlackedID(blackedID);
+            black.setBlackedTime(new Timestamp(System.currentTimeMillis()));
+            userService.blackoutUser(black);
+
+            map.put("success",true);
+        }catch (Exception e){
+            log.error(e.getMessage());
+            map.put("success",false);
+            map.put("msg","INTERNAL_ERROR");
+        }
+        return map;
+    }
+
+    @PostMapping("/unBlackoutUser")
+    @ApiOperation("取消拉黑用户")
+    @ApiImplicitParam(name = "blackID",value = "黑名单ID",required = true,dataType = "int")
+    public Map<String,Object> unBlackoutUser(@RequestParam Integer blackID){
+        Map<String,Object> map=new HashMap<>();
+        try {
+            userService.unBlackoutUser(blackID);
+            map.put("success",true);
+        }catch (Exception e){
+            log.error(e.getMessage());
+            map.put("success",false);
+            map.put("msg","INTERNAL_ERROR");
+        }
+        return map;
+    }
+
+    @GetMapping("/isFollowUser")
+    @ApiOperation("查询是否已关注用户")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "followerID",value = "关注者ID",required = true,dataType = "int"),
+            @ApiImplicitParam(name = "followedID",value = "被关注者ID",required = true,dataType = "int")
+    })
+    public Map<String,Object> isFollowUser(@RequestParam Integer followerID,@RequestParam Integer followedID){
+        Map<String,Object> map=new HashMap<>();
+        try {
+            boolean isFollow=userService.findUserFollowByFollowerIDAndFollowedID(followerID,followedID)!=null;
+            map.put("success",true);
+            map.put("isFollow",isFollow);
+        }catch (Exception e){
+            log.error(e.getMessage());
+            map.put("success",false);
+            map.put("msg","INTERNAL_ERROR");
+        }
+        return map;
+    }
+
+    @GetMapping("/isBlackoutUser")
+    @ApiOperation("查询是否已拉黑用户")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "blackerID",value = "拉黑者ID",required = true,dataType = "int"),
+            @ApiImplicitParam(name = "blackedID",value = "被拉黑者ID",required = true,dataType = "int")
+    })
+    public Map<String,Object> isBlackoutUser(@RequestParam Integer blackerID,@RequestParam Integer blackedID){
+        Map<String,Object> map=new HashMap<>();
+        try {
+            boolean isBlackout=userService.findBlackByBlackerIDAndBlackedID(blackerID,blackedID)!=null;
+            map.put("success",true);
+            map.put("isBlackout",isBlackout);
+        }catch (Exception e){
+            log.error(e.getMessage());
+            map.put("success",false);
+            map.put("msg","INTERNAL_ERROR");
+        }
+        return map;
+    }
+
+    @GetMapping("/getUserFollowList")
+    @ApiOperation("关注用户列表")
+    @ApiImplicitParam(name = "userID",value = "用户ID",required = true,dataType = "int")
+    public Map<String,Object> getUserFollowList(@RequestParam Integer userID){
+        Map<String,Object> map=new HashMap<>();
+        try {
+            List<UserFollow> userFollowList=userService.getUserFollowList(userID);
+            List<User> userList=new ArrayList<>();
+            if(userFollowList!=null&&userFollowList.size()!=0){
+                for(UserFollow userFollow:userFollowList){
+                    userList.add(userService.findUserByUserID(userFollow.getFollowedID()));
+                }
+            }
+            map.put("success",true);
+            map.put("userFollowList",userFollowList);
+            map.put("userList",userList);
+        }catch (Exception e){
+            log.error(e.getMessage());
+            map.put("success",false);
+            map.put("msg","INTERNAL_ERROR");
+        }
+        return map;
+    }
+
+    @GetMapping("/getBlackList")
+    @ApiOperation("拉黑用户列表")
+    @ApiImplicitParam(name = "userID",value = "用户ID",required = true,dataType = "int")
+    public Map<String,Object> getBlackList(@RequestParam Integer userID){
+        Map<String,Object> map=new HashMap<>();
+        try {
+            List<Black> blackList=userService.getBlackList(userID);
+            List<User> userList=new ArrayList<>();
+            if(blackList!=null&&blackList.size()!=0){
+                for(Black black:blackList){
+                    userList.add(userService.findUserByUserID(black.getBlackedID()));
+                }
+            }
+            map.put("success",true);
+            map.put("blackList",blackList);
+            map.put("userList",userList);
+        }catch (Exception e){
+            log.error(e.getMessage());
+            map.put("success",false);
+            map.put("msg","INTERNAL_ERROR");
+        }
+        return map;
+    }
+
+    @GetMapping("/getTopicFollowList")
+    @ApiOperation("关注主题列表")
+    @ApiImplicitParam(name = "userID",value = "用户ID",required = true,dataType = "int")
+    public Map<String,Object> getTopicFollowList(@RequestParam Integer userID){
+        Map<String,Object> map=new HashMap<>();
+        try {
+            List<TopicFollow> topicFollowList=userService.getTopicFollowList(userID);
+            List<Topic> topicList=new ArrayList<>();
+            if(topicFollowList!=null&&topicFollowList.size()!=0){
+                for(TopicFollow topicFollow:topicFollowList){
+                    topicList.add(topicService.findTopicByTopicID(topicFollow.getTopicID()));
+                }
+            }
+            map.put("success",true);
+            map.put("topicFollowList",topicFollowList);
+            map.put("topicList",topicList);
+        }catch (Exception e){
+            log.error(e.getMessage());
+            map.put("success",false);
+            map.put("msg","INTERNAL_ERROR");
+        }
+        return map;
+    }
+
+    @GetMapping("/getMyTopic")
+    @ApiOperation("发布的主题列表")
+    @ApiImplicitParam(name = "userID",value = "用户ID",required = true,dataType = "int")
+    public Map<String,Object> getMyTopic(@RequestParam Integer userID){
+        Map<String,Object> map=new HashMap<>();
+        try {
+            List<Topic> topicList=topicService.findCreateTopicListByCreateID(userID);
+            map.put("success",true);
+            map.put("topicList",topicList);
+        }catch (Exception e){
+            log.error(e.getMessage());
+            map.put("success",false);
+            map.put("msg","INTERNAL_ERROR");
+        }
+        return map;
+    }
+
+    @GetMapping("/getMyPost")
+    @ApiOperation("发布的帖子列表")
+    @ApiImplicitParam(name = "userID",value = "用户ID",required = true,dataType = "int")
+    public Map<String,Object> getMyPost(@RequestParam Integer userID){
+        Map<String,Object> map=new HashMap<>();
+        try {
+            List<Post> postList=postService.getCreatePostListByCreateID(userID);
+            map.put("success",true);
+            map.put("postList",postList);
+        }catch (Exception e){
+            log.error(e.getMessage());
+            map.put("success",false);
+            map.put("msg","INTERNAL_ERROR");
+        }
+        return map;
+    }
+
     //todo 修改个人信息
-
-    //todo 关注
-
-    //todo 取消关注
-
-    //todo 拉黑
-
-    //todo 取消拉黑
-
-    //todo 关注的主题
-
-    //todo 发布的主题
-
-    //todo 发布的帖子
 }

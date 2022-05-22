@@ -43,4 +43,10 @@
         set follow_num=follow_num-1
         where topicid=#{topicID}
     </update>
+    <!-- 根据用户ID获取创建的主题列表-->
+    <select id="findCreateTopicListByCreateID" parameterType="Integer" resultType="Topic">
+        select *
+        from topic
+        where createid=#{createID};
+    </select>
 </mapper>

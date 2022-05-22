@@ -1,10 +1,15 @@
 package com.viewsforum.viewsforum.Service.Impl;
 
 import com.viewsforum.viewsforum.Dao.UserDao;
+import com.viewsforum.viewsforum.Entity.Black;
+import com.viewsforum.viewsforum.Entity.TopicFollow;
 import com.viewsforum.viewsforum.Entity.User;
+import com.viewsforum.viewsforum.Entity.UserFollow;
 import com.viewsforum.viewsforum.Service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -44,5 +49,50 @@ public class UserServiceImpl implements UserService {
     // 根据用户ID查询用户
     public User findUserByUserID(Integer userID){
         return userDao.findUserByUserID(userID);
+    }
+
+    // 根据关注者ID与被关注者ID查询关注情况
+    public UserFollow findUserFollowByFollowerIDAndFollowedID(Integer followerID, Integer followedID){
+        return userDao.findUserFollowByFollowerIDAndFollowedID(followerID,followedID);
+    }
+
+    // 添加关注
+    public void followUser(UserFollow userFollow){
+        userDao.followUser(userFollow);
+    }
+
+    // 取消关注用户
+    public void unFollowUser(Integer userFollowID){
+        userDao.unFollowUser(userFollowID);
+    }
+
+    // 根据拉黑者ID与被拉黑者ID查询拉黑情况
+    public Black findBlackByBlackerIDAndBlackedID(Integer blackerID, Integer blackedID){
+        return userDao.findBlackByBlackerIDAndBlackedID(blackerID,blackedID);
+    }
+
+    // 拉黑用户
+    public void blackoutUser(Black black){
+        userDao.blackoutUser(black);
+    }
+
+    // 取消拉黑用户
+    public void unBlackoutUser(Integer blackID){
+        userDao.unBlackoutUser(blackID);
+    }
+
+    // 获取关注用户列表
+    public List<UserFollow> getUserFollowList(Integer followerID){
+        return userDao.getUserFollowList(followerID);
+    }
+
+    // 获取拉黑用户列表
+    public List<Black> getBlackList(Integer blackerID){
+        return userDao.getBlackList(blackerID);
+    }
+
+    // 获取关注主题列表
+    public List<TopicFollow> getTopicFollowList(Integer followerID){
+        return userDao.getTopicFollowList(followerID);
     }
 }

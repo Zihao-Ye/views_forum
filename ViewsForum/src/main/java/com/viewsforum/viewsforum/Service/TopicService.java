@@ -4,6 +4,8 @@ import com.viewsforum.viewsforum.Entity.Topic;
 import com.viewsforum.viewsforum.Entity.TopicFollow;
 import com.viewsforum.viewsforum.Entity.User;
 
+import java.util.List;
+
 public interface TopicService {
     // 根据主题ID获取主题
     Topic findTopicByTopicID(Integer topicID);
@@ -25,4 +27,7 @@ public interface TopicService {
 
     // 主题关注数-1
     void minusTopicFollowNum(Integer topicID);
+
+    // 根据用户ID获取创建的主题列表
+    List<Topic> findCreateTopicListByCreateID(Integer createID);
 }

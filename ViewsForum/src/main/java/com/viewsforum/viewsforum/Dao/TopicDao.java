@@ -5,6 +5,8 @@ import com.viewsforum.viewsforum.Entity.TopicFollow;
 import com.viewsforum.viewsforum.Entity.User;
 import org.apache.ibatis.annotations.Mapper;
 
+import java.util.List;
+
 @Mapper
 public interface TopicDao {
     // 根据主题ID获取主题
@@ -27,4 +29,7 @@ public interface TopicDao {
 
     // 主题关注数-1
     void minusTopicFollowNum(Integer topicID);
+
+    // 根据用户ID获取创建的主题列表
+    List<Topic> findCreateTopicListByCreateID(Integer createID);
 }

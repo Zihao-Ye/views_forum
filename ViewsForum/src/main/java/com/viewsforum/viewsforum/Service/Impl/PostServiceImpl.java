@@ -17,4 +17,9 @@ public class PostServiceImpl implements PostService {
     public List<Post> getPostListByTopicID(Integer topicID){
         return postDao.getPostListByTopicID(topicID);
     }
+
+    // 根据用户ID获取创建的帖子列表
+    public List<Post> getCreatePostListByCreateID(Integer createID){
+        return postDao.getCreatePostListByCreateID(createID);
+    }
 }

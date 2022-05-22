@@ -8,6 +8,8 @@ import com.viewsforum.viewsforum.Service.TopicService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class TopicServiceImpl implements TopicService {
     @Autowired
@@ -46,5 +48,10 @@ public class TopicServiceImpl implements TopicService {
     // 主题关注数-1
     public void minusTopicFollowNum(Integer topicID){
         topicDao.minusTopicFollowNum(topicID);
+    }
+
+    // 根据用户ID获取创建的主题列表
+    public List<Topic> findCreateTopicListByCreateID(Integer createID){
+        return topicDao.findCreateTopicListByCreateID(createID);
     }
 }

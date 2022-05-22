@@ -42,4 +42,54 @@
         from user
         where userid=#{userID}
     </select>
+    <!-- 根据关注者ID与被关注者ID查询关注情况-->
+    <select id="findUserFollowByFollowerIDAndFollowedID" parameterType="UserFollow" resultType="UserFollow">
+        select *
+        from user_follow
+        where followerid=#{followerID} and followedid=#{followedID}
+    </select>
+    <!-- 关注用户-->
+    <insert id="followUser" parameterType="UserFollow">
+        insert into user_follow(user_followid, followerid, followedid, follow_time)
+        values (#{userFollowID},#{followerID},#{followedID},#{followTime})
+    </insert>
+    <!-- 取消关注用户-->
+    <delete id="unFollowUser" parameterType="Integer">
+        delete from user_follow
+        where user_followid=#{userFollowID}
+    </delete>
+    <!-- 根据拉黑者ID与被拉黑者ID查询拉黑情况-->
+    <select id="findBlackByBlackerIDAndBlackedID" parameterType="Black" resultType="Black">
+        select *
+        from black
+        where blackerid=#{blackerID} and blackedid=#{blackedID}
+    </select>
+    <!-- 拉黑用户-->
+    <insert id="blackoutUser" parameterType="Black">
+        insert into black(blackedid, blackerid, blackedid, blacked_time)
+        values (#{blackID},#{blackerID},#{blackedID},#{blackTime})
+    </insert>
+    <!-- 取消拉黑用户-->
+    <delete id="unBlackoutUser" parameterType="Integer">
+        delete from black
+        where blackid=#{blackID}
+    </delete>
+    <!-- 获取关注用户列表-->
+    <select id="getUserFollowList" parameterType="Integer" resultType="UserFollow">
+        select *
+        from user_follow
+        where followerid=#{followerID}
+    </select>
+    <!-- 获取拉黑用户列表-->
+    <select id="getBlackList" parameterType="Integer" resultType="Black">
+        select *
+        from black
+        where blackerid=#{blackerID}
+    </select>
+    <!-- 获取关注主题列表-->
+    <select id="getTopicFollowList" parameterType="Integer" resultType="TopicFollow">
+        select *
+        from topic_follow
+        where followerid=#{followerID}
+    </select>
 </mapper>

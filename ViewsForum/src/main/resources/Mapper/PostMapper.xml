@@ -8,4 +8,10 @@
         where topicid=#{topicID} and is_delete=0
         order by post_time
     </select>
+    <!-- 根据用户ID获取创建的帖子列表-->
+    <select id="getCreatePostListByCreateID" parameterType="Integer" resultType="Post">
+        select *
+        from post
+        where createid=#{createID}
+    </select>
 </mapper>

@@ -193,6 +193,26 @@ public class TopicController {
         return map;
     }
 
+    @GetMapping("/isFollowTopic")
+    @ApiOperation("查询是否关注主题")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "userID",value = "用户ID",required = true,dataType = "int"),
+            @ApiImplicitParam(name = "topicID",value = "主题ID",required = true,dataType = "int")
+    })
+    public Map<String,Object> isFollowTopic(@RequestParam Integer userID,@RequestParam Integer topicID){
+        Map<String,Object> map=new HashMap<>();
+        try {
+            boolean isFollow=topicService.findTopicFollowByFollowerIDAndTopicID(userID,topicID)!=null;
+            map.put("success",true);
+            map.put("isFollow",isFollow);
+        }catch (Exception e){
+            log.error(e.getMessage());
+            map.put("success",false);
+            map.put("msg","INTERNAL_ERROR");
+        }
+        return map;
+    }
+
     //todo 发布主题
 
     //todo 修改主题内容
