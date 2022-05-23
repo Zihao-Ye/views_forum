@@ -15,8 +15,8 @@
     </select>
     <!-- 添加用户-->
     <insert id="addNewUser" parameterType="User">
-        insert into user(userid, user_name, password, email)
-        values (#{userID},#{userName},#{password},#{email})
+        insert into user(userid, user_name, password, email, note)
+        values (#{userID},#{userName},#{password},#{email},#{note})
     </insert>
     <!-- 根据用户名与密码查询用户-->
     <select id="findUserByUserNameAndPassword" parameterType="User" resultType="User">
@@ -28,7 +28,7 @@
     <update id="changePasswordByUserIDAndPassword" parameterType="User">
         update user
         set password=#{password}
-        where userid=#{userID}
+        where user_name=#{userName}
     </update>
     <!-- 根据用户名与邮箱查询用户-->
     <select id="findUserByUserNameAndEmail" parameterType="User" resultType="User">
@@ -92,4 +92,10 @@
         from topic_follow
         where followerid=#{followerID}
     </select>
+    <!-- 修改用户信息-->
+    <update id="editUserInfoByUserID" parameterType="User">
+        update user
+        set user_name=#{userName},email=#{email},note=#{note}
+        where userid=#{userID}
+    </update>
 </mapper>

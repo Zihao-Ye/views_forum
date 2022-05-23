@@ -37,8 +37,8 @@ public class UserServiceImpl implements UserService {
     }
 
     // 根据用户ID与密码修改密码
-    public void changePasswordByUserIDAndPassword(Integer userID, String password){
-        userDao.changePasswordByUserIDAndPassword(userID,password);
+    public void changePasswordByUserIDAndPassword(String userName, String password){
+        userDao.changePasswordByUserIDAndPassword(userName,password);
     }
 
     // 根据用户名与邮箱查询用户
@@ -94,5 +94,10 @@ public class UserServiceImpl implements UserService {
     // 获取关注主题列表
     public List<TopicFollow> getTopicFollowList(Integer followerID){
         return userDao.getTopicFollowList(followerID);
+    }
+
+    // 修改用户信息
+    public void editUserInfoByUserID(Integer userID,String userName,String email,String note){
+        userDao.editUserInfoByUserID(userID,userName,email,note);
     }
 }

@@ -21,7 +21,7 @@ public interface UserService {
     User findUserByUserNameAndPassword(String userName,String password);
 
     // 根据用户ID与密码修改密码
-    void changePasswordByUserIDAndPassword(Integer userID, String password);
+    void changePasswordByUserIDAndPassword(String userName, String password);
 
     // 根据用户名与邮箱查询用户
     User findUserByUserNameAndEmail(String userName,String email);
@@ -55,4 +55,7 @@ public interface UserService {
 
     // 获取关注主题列表
     List<TopicFollow> getTopicFollowList(Integer followerID);
+
+    // 修改用户信息
+    void editUserInfoByUserID(Integer userID,String userName,String email,String note);
 }

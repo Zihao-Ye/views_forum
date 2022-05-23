@@ -94,6 +94,7 @@ public class UserController {
                 user.setUserName(userName);
                 user.setPassword(password);
                 user.setEmail(email);
+                user.setNote("这个人还没有留言");
                 userService.addNewUser(user);
                 log.info("");
                 map.put("success",true);
@@ -201,12 +202,12 @@ public class UserController {
     @PostMapping("/verify")
     @ApiOperation("验证验证码")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "userID",value="用户ID",required = true,dataType = "int"),
+            @ApiImplicitParam(name = "userName",value="用户名",required = true,dataType = "String"),
             @ApiImplicitParam(name = "password",value="密码",required = true,dataType = "String"),
             @ApiImplicitParam(name = "rePassword",value = "重新确认密码",required = true,dataType = "String"),
             @ApiImplicitParam(name = "code",value = "验证码",required = true,dataType = "String")
     })
-    public Map<String,Object> resetPassword(HttpServletRequest request,@RequestParam Integer userID,@RequestParam String password,@RequestParam String rePassword,@RequestParam String code){
+    public Map<String,Object> resetPassword(HttpServletRequest request,@RequestParam String userName,@RequestParam String password,@RequestParam String rePassword,@RequestParam String code){
         Map<String,Object> map=new HashMap<>();
         try{
             // 格式检查
@@ -229,7 +230,7 @@ public class UserController {
                 map.put("msg","验证码错误");
             }
             else{
-                userService.changePasswordByUserIDAndPassword(userID, DigestUtils.md5DigestAsHex(password.getBytes(StandardCharsets.UTF_8)));
+                userService.changePasswordByUserIDAndPassword(userName, DigestUtils.md5DigestAsHex(password.getBytes(StandardCharsets.UTF_8)));
                 request.getSession().removeAttribute("code");
                 map.put("success",true);
                 map.put("msg","修改密码成功");
@@ -507,4 +508,39 @@ public class UserController {
     }
 
     //todo 修改个人信息
+    @PostMapping("/editUserInfo")
+    @ApiOperation("修改个人信息")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "userID",value = "用户ID",required = true,dataType = "String"),
+            @ApiImplicitParam(name = "userName",value = "用户名",required = true,dataType = "String"),
+            @ApiImplicitParam(name = "email",value = "邮箱",required = true,dataType = "String"),
+            @ApiImplicitParam(name = "note",value = "备注",required = true,dataType = "String")
+    })
+    public Map<String,Object> editUserInfo(@RequestParam Integer userID,@RequestParam String userName,@RequestParam String email,@RequestParam String note){
+        Map<String,Object> map=new HashMap<>();
+        try {
+            User originalUser=userService.findUserByUserID(userID);
+            User nameUser=userService.findUserByUserName(userName);
+            User emailUser=userService.findUserByEmail(email);
+            // 检查用户名、邮箱是否被占用
+            if(nameUser!=null&& !nameUser.getUserID().equals(userID)){
+                map.put("success",false);
+                map.put("msg","用户名已被占用");
+                return map;
+            }
+            if(emailUser!=null&& !emailUser.getUserID().equals(userID)){
+                map.put("success",false);
+                map.put("msg","邮箱已被占用");
+                return map;
+            }
+            // 修改备注
+            userService.editUserInfoByUserID(userID,userName,email,note);
+            map.put("success",true);
+        }catch (Exception e){
+            log.error(e.getMessage());
+            map.put("success",true);
+            map.put("msg","INTERNAL_ERROR");
+        }
+        return map;
+    }
 }
