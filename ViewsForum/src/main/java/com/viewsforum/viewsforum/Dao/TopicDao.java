@@ -1,5 +1,6 @@
 package com.viewsforum.viewsforum.Dao;
 
+import com.viewsforum.viewsforum.Entity.Post;
 import com.viewsforum.viewsforum.Entity.Topic;
 import com.viewsforum.viewsforum.Entity.TopicFollow;
 import com.viewsforum.viewsforum.Entity.User;
@@ -32,4 +33,10 @@ public interface TopicDao {
 
     // 根据用户ID获取创建的主题列表
     List<Topic> findCreateTopicListByCreateID(Integer createID);
+
+    // 根据主题ID与关键词搜索帖子
+    List<Post> findPostByTopicIDAndKeyword(Integer topicID, String keyword);
+
+    // 根据关键词搜索主题
+    List<Topic> findTopicByKeyword(String keyword);
 }

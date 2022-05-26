@@ -45,7 +45,8 @@ public class UserController {
     @Autowired
     private TopicService topicService;
 
-    @Autowired PostService postService;
+    @Autowired
+    private PostService postService;
 
 
 

@@ -1,6 +1,7 @@
 package com.viewsforum.viewsforum.Service.Impl;
 
 import com.viewsforum.viewsforum.Dao.TopicDao;
+import com.viewsforum.viewsforum.Entity.Post;
 import com.viewsforum.viewsforum.Entity.Topic;
 import com.viewsforum.viewsforum.Entity.TopicFollow;
 import com.viewsforum.viewsforum.Entity.User;
@@ -53,5 +54,15 @@ public class TopicServiceImpl implements TopicService {
     // 根据用户ID获取创建的主题列表
     public List<Topic> findCreateTopicListByCreateID(Integer createID){
         return topicDao.findCreateTopicListByCreateID(createID);
+    }
+
+    // 根据主题ID与关键词搜索帖子
+    public List<Post> findPostByTopicIDAndKeyword(Integer topicID, String keyword){
+        return topicDao.findPostByTopicIDAndKeyword(topicID,keyword);
+    }
+
+    // 根据关键词搜索主题
+    public List<Topic> findTopicByKeyword(String keyword){
+        return topicDao.findTopicByKeyword(keyword);
     }
 }

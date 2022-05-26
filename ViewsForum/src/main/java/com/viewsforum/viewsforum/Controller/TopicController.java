@@ -213,6 +213,43 @@ public class TopicController {
         return map;
     }
 
+    @GetMapping("/searchPost")
+    @ApiOperation("/搜索主题下帖子")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "topicID",value = "主题ID",required = true,dataType = "int"),
+            @ApiImplicitParam(name = "keyword",value = "搜索关键词",required = true,dataType = "String")
+    })
+    public Map<String,Object> searchPost(@RequestParam Integer topicID,@RequestParam String keyword){
+        Map<String,Object> map=new HashMap<>();
+        try {
+            List<Post> postList=topicService.findPostByTopicIDAndKeyword(topicID,keyword);
+            map.put("success",true);
+            map.put("postList",postList);
+        }catch (Exception e){
+            log.error(e.getMessage());
+            map.put("success",false);
+            map.put("msg","INTERNAL_ERROR");
+        }
+        return map;
+    }
+
+    @GetMapping("/searchTopic")
+    @ApiOperation("/搜索主题")
+    @ApiImplicitParam(name = "keyword",value = "搜索关键词",required = true,dataType = "String")
+    public Map<String,Object> searchTopic(@RequestParam String keyword){
+        Map<String,Object> map=new HashMap<>();
+        try {
+            List<Topic> topicList=topicService.findTopicByKeyword(keyword);
+            map.put("success",true);
+            map.put("topicList",topicList);
+        }catch (Exception e){
+            log.error(e.getMessage());
+            map.put("success",false);
+            map.put("msg","INTERNAL_ERROR");
+        }
+        return map;
+    }
+
     //todo 发布主题
 
     //todo 修改主题内容

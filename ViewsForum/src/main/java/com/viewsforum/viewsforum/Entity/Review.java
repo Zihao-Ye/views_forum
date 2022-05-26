@@ -37,7 +37,7 @@ public class Review {
     @ApiModelProperty(value = "回复内容")
     private String reviewContent;
 
-    @ApiModelProperty(value = "回复种类", notes = "1：回复发言 2：回复回复")
+    @ApiModelProperty(value = "回复种类", notes = "1：回复评论 2：回复回复")
     private Integer reviewType;
 
     @ApiModelProperty(value = "回复时间")

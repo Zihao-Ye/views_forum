@@ -49,4 +49,16 @@
         from topic
         where createid=#{createID};
     </select>
+    <!-- 根据主题ID与关键词搜索帖子-->
+    <select id="findPostByTopicIDAndKeyword" resultType="Post">
+        select *
+        from post
+        where topicid=#{topicID} and post_name like '%${keyword}%'
+    </select>
+    <!-- 根据关键词搜索主题-->
+    <select id="findTopicByKeyword" parameterType="Integer" resultType="Topic">
+        select *
+        from topic
+        where topic_name like '%${keyword}%'
+    </select>
 </mapper>

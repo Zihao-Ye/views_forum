@@ -14,4 +14,21 @@
         from post
         where createid=#{createID}
     </select>
+    <!-- 根据回复ID获取回复-->
+    <select id="getReviewByReviewID" parameterType="Integer" resultType="Review">
+        select *
+        from review
+        where reviewid=#{reviewID}
+    </select>
+    <!-- 根据评论ID获取评论-->
+    <select id="getCommentByCommentID" parameterType="Integer" resultType="Comment">
+        select *
+        from comment
+        where commentid=#{commentID}
+    </select>
+    <!-- 添加回复-->
+    <insert id="addNewReview" parameterType="Review">
+        insert into review(reviewid, commentid, fromid, toid, reviewedid, review_content, review_type, review_time)
+        values (#{reviewID},#{commentID},#{fromID},#{toID},#{reviewedID},#{reviewContent},#{reviewType},#{reviewTime})
+    </insert>
 </mapper>

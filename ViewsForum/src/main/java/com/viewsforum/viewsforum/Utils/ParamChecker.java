@@ -46,4 +46,12 @@ public class ParamChecker {
         }
         return true;
     }
+
+    public boolean checkReview(String review){
+        if(!checkNotNull(review) || review.length()<=0 || review.length()>=201){
+            return false;
+        }
+        return true;
+    }
+
 }
