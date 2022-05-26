@@ -52,10 +52,10 @@ public class UserController {
     @PostMapping("/register")
     @ApiOperation("用户注册")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "userName", value = "用户名", required = true, dataType = "String"),
-            @ApiImplicitParam(name = "password", value = "密码", required = true, dataType = "String"),
+            @ApiImplicitParam(name = "userName", value = "用户名，5<=字符长度<=20", required = true, dataType = "String"),
+            @ApiImplicitParam(name = "password", value = "密码，6-10位，必须由数字或字母组成", required = true, dataType = "String"),
             @ApiImplicitParam(name = "rePassword", value = "重新确认密码", required = true, dataType = "String"),
-            @ApiImplicitParam(name = "email", value = "邮箱", required = true, dataType = "String")
+            @ApiImplicitParam(name = "email", value = "邮箱，遵循正则匹配：\n(^[a-zA-Z0-9]{1,10}@[a-zA-Z0-9]{1,5}\\.[a-zA-Z0-9]{1,5})", required = true, dataType = "String")
     })
     public Map<String,Object> register(@RequestParam String userName,@RequestParam String password,@RequestParam String rePassword,@RequestParam String email){
         Map<String, Object> map = new HashMap<>();
@@ -63,17 +63,17 @@ public class UserController {
             // 格式检查
             if(!paramChecker.checkUserName(userName)){
                 map.put("success",false);
-                map.put("msg","格式错误");
+                map.put("msg","用户名格式错误");
                 return map;
             }
             if(!paramChecker.checkPassword(password)){
                 map.put("success",false);
-                map.put("msg","格式错误");
+                map.put("msg","密码格式错误");
                 return map;
             }
             if(!paramChecker.checkEmail(email)){
                 map.put("success",false);
-                map.put("msg","格式错误");
+                map.put("msg","邮箱格式错误");
                 return map;
             }
             // 逻辑
@@ -98,7 +98,6 @@ public class UserController {
                 userService.addNewUser(user);
                 log.info("");
                 map.put("success",true);
-                map.put("message","用户注册成功");
             }
         }catch (Exception e){
             log.error(e.getMessage());
@@ -111,8 +110,8 @@ public class UserController {
     @PostMapping("/login")
     @ApiOperation("登录")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "userName",value="用户名",required = true,dataType = "String"),
-            @ApiImplicitParam(name = "password",value="用户密码",required = true,dataType = "String")
+            @ApiImplicitParam(name = "userName",value="用户名，5<=字符长度<=20",required = true,dataType = "String"),
+            @ApiImplicitParam(name = "password",value="用户密码，6-10位，必须由数字或字母组成",required = true,dataType = "String")
     })
     public Map<String,Object> login(HttpServletRequest request, @RequestParam String userName, @RequestParam String password){
         Map<String, Object> map = new HashMap<>();
@@ -120,12 +119,12 @@ public class UserController {
             // 格式检查
             if(!paramChecker.checkUserName(userName)){
                 map.put("success",false);
-                map.put("msg","格式错误");
+                map.put("msg","用户名格式错误");
                 return map;
             }
             if(!paramChecker.checkPassword(password)){
                 map.put("success",false);
-                map.put("msg","格式错误");
+                map.put("msg","密码格式错误");
                 return map;
             }
 
@@ -143,7 +142,6 @@ public class UserController {
                 HttpSession session=request.getSession();
                 session.setAttribute("userID",user.getUserID());
                 map.put("success", true);
-                map.put("msg", "用户登录成功");
                 map.put("user",user);
                 map.put("isAdmin",isAdmin);
             }
@@ -158,8 +156,8 @@ public class UserController {
     @PostMapping("/forgetPassword")
     @ApiOperation("忘记密码")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "userName",value="用户名",required = true,dataType = "String"),
-            @ApiImplicitParam(name = "email",value="邮箱",required = true,dataType = "String")
+            @ApiImplicitParam(name = "userName",value="用户名，5<=字符长度<=20",required = true,dataType = "String"),
+            @ApiImplicitParam(name = "email，遵循正则匹配：\n(^[a-zA-Z0-9]{1,10}@[a-zA-Z0-9]{1,5}\\.[a-zA-Z0-9]{1,5})",value="邮箱",required = true,dataType = "String")
     })
     public Map<String,Object> forgetPassword(HttpServletRequest request,@RequestParam String userName, @RequestParam String email){
         Map<String,Object> map=new HashMap<>();
@@ -189,7 +187,6 @@ public class UserController {
                 HttpSession session=request.getSession();
                 emailService.sendEmail(email,session);
                 map.put("success", true);
-                map.put("msg", "邮件已发送，请查看你绑定的邮箱");
             }
         }catch (Exception e){
             log.error(e.getMessage());
@@ -202,9 +199,9 @@ public class UserController {
     @PostMapping("/verify")
     @ApiOperation("验证验证码")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "userName",value="用户名",required = true,dataType = "String"),
-            @ApiImplicitParam(name = "password",value="密码",required = true,dataType = "String"),
-            @ApiImplicitParam(name = "rePassword",value = "重新确认密码",required = true,dataType = "String"),
+            @ApiImplicitParam(name = "userName",value="用户名，5<=字符长度<=20",required = true,dataType = "String"),
+            @ApiImplicitParam(name = "password",value="密码，6-10位，必须由数字或字母组成",required = true,dataType = "String"),
+            @ApiImplicitParam(name = "rePassword",value = "重新确认密码，6-10位，必须由数字或字母组成",required = true,dataType = "String"),
             @ApiImplicitParam(name = "code",value = "验证码",required = true,dataType = "String")
     })
     public Map<String,Object> resetPassword(HttpServletRequest request,@RequestParam String userName,@RequestParam String password,@RequestParam String rePassword,@RequestParam String code){
@@ -213,7 +210,7 @@ public class UserController {
             // 格式检查
             if(!paramChecker.checkPassword(password)||!paramChecker.checkNotNull(rePassword)||!paramChecker.checkNotNull(code)){
                 map.put("success",false);
-                map.put("msg","格式错误");
+                map.put("msg","密码格式错误");
                 return map;
             }
 
@@ -233,7 +230,6 @@ public class UserController {
                 userService.changePasswordByUserIDAndPassword(userName, DigestUtils.md5DigestAsHex(password.getBytes(StandardCharsets.UTF_8)));
                 request.getSession().removeAttribute("code");
                 map.put("success",true);
-                map.put("msg","修改密码成功");
             }
         }catch (Exception e){
             log.error(e.getMessage());
@@ -251,7 +247,6 @@ public class UserController {
             HttpSession session=request.getSession();
             session.removeAttribute("userID");
             map.put("success",true);
-            map.put("msg","注销成功");
         }catch (Exception e){
             log.error(e.getMessage());
             map.put("success",false);
@@ -317,7 +312,7 @@ public class UserController {
     }
 
     @PostMapping("/blackoutUser")
-    @ApiOperation("拉黑")
+    @ApiOperation("拉黑用户")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "blackerID",value = "拉黑者ID",required = true,dataType = "int"),
             @ApiImplicitParam(name = "blackedID",value = "被拉黑者ID",required = true,dataType = "int")
@@ -507,18 +502,33 @@ public class UserController {
         return map;
     }
 
-    //todo 修改个人信息
     @PostMapping("/editUserInfo")
     @ApiOperation("修改个人信息")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "userID",value = "用户ID",required = true,dataType = "String"),
-            @ApiImplicitParam(name = "userName",value = "用户名",required = true,dataType = "String"),
-            @ApiImplicitParam(name = "email",value = "邮箱",required = true,dataType = "String"),
-            @ApiImplicitParam(name = "note",value = "备注",required = true,dataType = "String")
+            @ApiImplicitParam(name = "userName",value = "用户名，5<=字符长度<=20",required = true,dataType = "String"),
+            @ApiImplicitParam(name = "email",value = "邮箱，遵循正则匹配：\n(^[a-zA-Z0-9]{1,10}@[a-zA-Z0-9]{1,5}\\.[a-zA-Z0-9]{1,5})",required = true,dataType = "String"),
+            @ApiImplicitParam(name = "note",value = "备注，1<=字符长度<=100",required = true,dataType = "String")
     })
     public Map<String,Object> editUserInfo(@RequestParam Integer userID,@RequestParam String userName,@RequestParam String email,@RequestParam String note){
         Map<String,Object> map=new HashMap<>();
         try {
+            if(!paramChecker.checkUserName(userName)){
+                map.put("success",false);
+                map.put("msg","用户名格式错误");
+                return map;
+            }
+            if(!paramChecker.checkEmail(email)){
+                map.put("success",false);
+                map.put("msg","邮箱格式错误");
+                return map;
+            }
+            if(!paramChecker.checkNote(note)){
+                map.put("success",false);
+                map.put("msg","备注格式错误");
+                return map;
+            }
+
             User originalUser=userService.findUserByUserID(userID);
             User nameUser=userService.findUserByUserName(userName);
             User emailUser=userService.findUserByEmail(email);

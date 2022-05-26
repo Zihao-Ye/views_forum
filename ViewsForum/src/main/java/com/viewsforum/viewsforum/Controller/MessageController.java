@@ -45,7 +45,7 @@ public class MessageController {
     }
 
     @GetMapping("readOneMessage")
-    @ApiOperation("不同类别的消息")
+    @ApiOperation("已读消息")
     @ApiImplicitParam(name = "systemMessageID",value = "系统消息ID",required = true,dataType = "int")
     public Map<String,Object> readOneMessage(@RequestParam Integer systemMessageID){
         Map<String,Object> map=new HashMap<>();

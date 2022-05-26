@@ -25,7 +25,7 @@ public class ParamChecker {
     public boolean checkPassword(String password){
         Pattern pattern;
         Matcher matcher;
-        String PASSWORD_PATTERN="((?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%]).{6,20})";
+        String PASSWORD_PATTERN="^(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z]{6,10}$";
         pattern=Pattern.compile(PASSWORD_PATTERN);
         matcher = pattern.matcher(password);
         return matcher.matches();
@@ -38,5 +38,12 @@ public class ParamChecker {
         pattern=Pattern.compile(EMAIL_PATTERN);
         matcher = pattern.matcher(email);
         return matcher.matches();
+    }
+
+    public boolean checkNote(String note){
+        if(!checkNotNull(note) || note.length()<=0 || note.length()>=101){
+            return false;
+        }
+        return true;
     }
 }
