@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.sql.Timestamp;
 
 @Entity
 @Data
@@ -34,6 +35,9 @@ public class Topic {
 
     @ApiModelProperty(value = "主题贴子数")
     private Integer postNum;
+
+    @ApiModelProperty(value = "创建时间")
+    private Timestamp createTime;
 
     @ApiModelProperty(value = "是否被删除")
     private Integer isDelete;

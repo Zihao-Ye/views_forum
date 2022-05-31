@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.persistence.Entity;
 import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.List;
@@ -250,7 +251,85 @@ public class TopicController {
         return map;
     }
 
-    //todo 发布主题
+    @PostMapping("/addTopic")
+    @ApiOperation("发布主题")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "userID",value = "创建者ID",required = true,dataType = "int"),
+            @ApiImplicitParam(name = "topicName",value = "主题名，1<=字符长度<=15",required = true,dataType = "String"),
+            @ApiImplicitParam(name = "topicNote",value = "主题说明，1<=字符长度<=201",required = true,dataType = "String")
+    })
+    public Map<String,Object> addTopic(@RequestParam Integer userID, @RequestParam String topicName,@RequestParam String topicNote){
+        Map<String,Object> map=new HashMap<>();
+        try {
+            if(!paramChecker.checkTopicName(topicName)){
+                map.put("success",false);
+                map.put("msg","主题名格式错误");
+                return map;
+            }
+            if(!paramChecker.checkNote(topicNote)){
+                map.put("success",false);
+                map.put("msg","主题说明格式错误");
+                return map;
+            }
+            if(topicService.findTopicByTopicName(topicName)!=null){
+                map.put("success",false);
+                map.put("msg","主题名已存在");
+                return map;
+            }
+            Topic topic=new Topic();
+            topic.setCreateID(userID);
+            topic.setTopicName(topicName);
+            topic.setTopicNote(topicNote);
+            topic.setCreateTime(new Timestamp(System.currentTimeMillis()));
+            topicService.addNewTopic(topic);
+            map.put("success",true);
+        }catch (Exception e){
+            log.error(e.getMessage());
+            map.put("success",false);
+            map.put("msg","INTERNAL_ERROR");
+        }
+        return map;
+    }
 
-    //todo 修改主题内容
+    @PostMapping("/editTopic")
+    @ApiOperation("修改主题信息")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "userID",value = "用户ID",required = true,dataType = "int"),
+            @ApiImplicitParam(name = "topicID",value = "主题ID",required = true,dataType = "int"),
+            @ApiImplicitParam(name = "topicName",value = "主题名，1<=字符长度<=15",required = true,dataType = "String"),
+            @ApiImplicitParam(name = "topicNote",value = "主题说明，1<=字符长度<=201",required = true,dataType = "String")
+    })
+    public Map<String,Object> editTopic(@RequestParam Integer userID,@RequestParam Integer topicID, @RequestParam String topicName,@RequestParam String topicNote){
+        Map<String,Object> map=new HashMap<>();
+        try {
+            if(!paramChecker.checkTopicName(topicName)){
+                map.put("success",false);
+                map.put("msg","主题名格式错误");
+                return map;
+            }
+            if(!paramChecker.checkNote(topicNote)){
+                map.put("success",false);
+                map.put("msg","主题说明格式错误");
+                return map;
+            }
+            if(adminService.findTopicCreatorByUserIDAndTopicID(userID,topicID)==null){
+                map.put("success",false);
+                map.put("msg","权限不足");
+                return map;
+            }
+            Topic topic=topicService.findTopicByTopicName(topicName);
+            if(topic!=null&& !topic.getTopicID().equals(topicID)){
+                map.put("success",false);
+                map.put("msg","主题名已存在");
+                return map;
+            }
+            topicService.editTopicByTopicID(topicID,topicName,topicNote);
+            map.put("success",true);
+        }catch (Exception e){
+            log.error(e.getMessage());
+            map.put("success",false);
+            map.put("msg","INTERNAL_ERROR");
+        }
+        return map;
+    }
 }

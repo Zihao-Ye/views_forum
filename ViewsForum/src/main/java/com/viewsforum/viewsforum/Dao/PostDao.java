@@ -23,4 +23,31 @@ public interface PostDao {
 
     // 添加回复
     void addNewReview(Review review);
+
+    // 回复数+1
+    void addReviewNum(Integer commentID);
+
+    // 评论数+1
+    void addCommentNum(Integer postID);
+
+    // 回复数-1
+    void minusReviewNum(Integer commentID);
+
+    // 评论数-1
+    void minusCommentNum(Integer postID);
+
+    // 添加帖子
+    void addNewPost(Post post);
+
+    // 添加回复
+    void addNewComment(Comment comment);
+
+    // 根据帖子ID获取帖子
+    Post getPostByPostID(Integer postID);
+
+    // 根据帖子ID获取帖子下评论列表
+    List<Comment> getCommentListByPostID(Integer postID);
+
+    // 根据评论ID获取评论下回复列表
+    List<Review> getReviewListByCommentID(Integer commentID);
 }

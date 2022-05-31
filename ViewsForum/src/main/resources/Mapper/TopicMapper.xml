@@ -3,7 +3,9 @@
 <mapper namespace="com.viewsforum.viewsforum.Dao.TopicDao">
     <!-- 根据主题ID查询主题-->
     <select id="findTopicByTopicID" parameterType="Integer" resultType="Topic">
-        select * from topic where topicid=#{topicID}
+        select *
+        from topic
+        where topicid=#{topicID}
     </select>
     <!-- 根据主题ID获取创建者-->
     <select id="findCreatorByTopicID" parameterType="Integer" resultType="User">
@@ -61,4 +63,21 @@
         from topic
         where topic_name like '%${keyword}%'
     </select>
+    <!-- 根据主题名查询主题-->
+    <select id="findTopicByTopicName" parameterType="String" resultType="Topic">
+        select *
+        from topic
+        where topic_name=#{topicName}
+    </select>
+    <!-- 发布主题-->
+    <insert id="addNewTopic" parameterType="Topic">
+        insert into topic(topicid, createid, topic_name, topic_note, create_time)
+        values (#{topicID},#{createID},#{topicName},#{topicNote},#{createTime})
+    </insert>
+    <!-- 修改主题信息-->
+    <update id="editTopicByTopicID" parameterType="Topic">
+        update topic
+        set topic_name=#{topicName},topic_note=#{topicNote}
+        where topicid=#{topicID}
+    </update>
 </mapper>

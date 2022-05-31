@@ -1,9 +1,6 @@
 package com.viewsforum.viewsforum.Controller;
 
-import com.viewsforum.viewsforum.Entity.Comment;
-import com.viewsforum.viewsforum.Entity.Review;
-import com.viewsforum.viewsforum.Entity.SystemMessage;
-import com.viewsforum.viewsforum.Entity.User;
+import com.viewsforum.viewsforum.Entity.*;
 import com.viewsforum.viewsforum.Service.PostService;
 import com.viewsforum.viewsforum.Service.SystemMessageService;
 import com.viewsforum.viewsforum.Service.UserService;
@@ -14,13 +11,16 @@ import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
 import java.sql.Timestamp;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 @Slf4j
 @Api(tags = "帖子相关接口")
@@ -37,13 +37,127 @@ public class PostController {
     @Autowired
     private SystemMessageService systemMessageService;
 
+    @PostMapping("/addPost")
+    @ApiOperation("创建帖子")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "userID",value = "用户ID",required = true,dataType = "int"),
+            @ApiImplicitParam(name = "postName",value = "帖子名称",required = true,dataType = "String"),
+            @ApiImplicitParam(name = "topicID",value = "帖子所属主题ID",required = true,dataType = "int"),
+            @ApiImplicitParam(name = "img",value = "图片",required = false,dataType = "MultipartFile"),
+            @ApiImplicitParam(name = "hasFile",value = "是否上传图片，0：不上传，1：上传",required = true,dataType = "int")
+    })
+    public Map<String,Object> addPost(@RequestParam Integer userID, @RequestParam String postName, @RequestParam Integer topicID,@RequestParam MultipartFile img,@RequestParam Integer hasFile){
+        Map<String,Object> map=new HashMap<>();
+        //todo 参数检验
+        if(hasFile!=0&&hasFile!=1){
+            map.put("success",false);
+            map.put("msg","hasFile参数错误");
+            return map;
+        }
+        if(hasFile==1&&img.isEmpty()){
+            map.put("success",false);
+            map.put("msg","上传失败");
+            return map;
+        }
+        try {
+            Post post=new Post();
+            post.setPostName(postName);
+            post.setCreateID(userID);
+            post.setTopicID(topicID);
+            post.setPostTime(new Timestamp(System.currentTimeMillis()));
+            if(hasFile==0){
+                post.setPicturePath("null");
+                postService.addNewPost(post);
+            }
+            else{
+                try {
+                    String filename=img.getOriginalFilename();
+                    String newFilename= UUID.randomUUID()+filename;
+                    File dest=new File(newFilename);
+                    img.transferTo(dest);
+                    String picturePath=dest.getPath();
+                    post.setPicturePath(picturePath);
+                    postService.addNewPost(post);
+                }catch (IOException ioException){
+                    log.error(ioException.getMessage());
+                    map.put("success",false);
+                    map.put("msg","IO_ERROR");
+                }
+            }
+            map.put("success",true);
+        }catch (Exception e){
+            log.error(e.getMessage());
+            map.put("success",false);
+            map.put("msg","INTERNAL_ERROR");
+        }
+        return map;
+    }
 
-    //todo 创建帖子
+    @PostMapping("/addComment")
+    @ApiOperation("创建评论")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "userID",value = "用户ID",required = true,dataType = "int"),
+            @ApiImplicitParam(name = "commentContent",value = "评论内容",required = true,dataType = "String"),
+            @ApiImplicitParam(name = "postID",value = "评论所属帖子ID",required = true,dataType = "int"),
+            @ApiImplicitParam(name = "img",value = "图片",required = false,dataType = "MultipartFile"),
+            @ApiImplicitParam(name = "hasFile",value = "是否上传图片，0：不上传，1：上传",required = true,dataType = "int")
+    })
+    public Map<String,Object> addComment(@RequestParam Integer userID, @RequestParam String commentContent, @RequestParam Integer postID,@RequestParam MultipartFile img,@RequestParam Integer hasFile){
+        Map<String,Object> map=new HashMap<>();
+        //todo 参数检验
+        if(hasFile!=0&&hasFile!=1){
+            map.put("success",false);
+            map.put("msg","hasFile参数错误");
+            return map;
+        }
+        if(hasFile==1&&img.isEmpty()){
+            map.put("success",false);
+            map.put("msg","上传失败");
+            return map;
+        }
+        try {
+            Comment comment=new Comment();
+            comment.setCommentContent(commentContent);
+            comment.setCreateID(userID);
+            comment.setPostID(postID);
+            comment.setCommentTime(new Timestamp(System.currentTimeMillis()));
+            if(hasFile==0){
+                comment.setPicturePath("null");
+                postService.addNewComment(comment);
+            }
+            else{
+                try {
+                    String filename=img.getOriginalFilename();
+                    String newFilename= UUID.randomUUID()+filename;
+                    File dest=new File(newFilename);
+                    img.transferTo(dest);
+                    String picturePath=dest.getPath();
+                    comment.setPicturePath(picturePath);
+                    postService.addNewComment(comment);
+                }catch (IOException ioException){
+                    log.error(ioException.getMessage());
+                    map.put("success",false);
+                    map.put("msg","IO_ERROR");
+                }
+            }
+            Post post= postService.getPostByPostID(postID);
+            SystemMessage systemMessage=new SystemMessage();
+            systemMessage.setMessageTime(new Timestamp(System.currentTimeMillis()));
+            systemMessage.setMessageType(2);
+            systemMessage.setUserID(post.getCreateID());
+            systemMessage.setMessageContent(userService.findUserByUserID(userID).getUserName()+" 评论了您的帖子 "+post.getPostName());
+            systemMessageService.addNewSystemMessage(systemMessage);
 
-    //todo 获取评论
+            postService.addCommentNum(postID);
 
-
-    //todo 发表评论
+            map.put("success",true);
+        }catch (Exception e){
+            log.error(e.getMessage());
+            map.put("success",false);
+            map.put("msg","INTERNAL_ERROR");
+        }
+        return map;
+    }
 
     @PostMapping("/reviewToCommentOrReview")
     @ApiOperation("回复评论或回复")
@@ -76,6 +190,8 @@ public class PostController {
             review.setReviewType(reviewType);
             postService.addNewReview(review);
 
+            postService.addReviewNum(commentID);
+
             String messageContent;
             if(reviewType==1){
                 Comment comment= postService.getCommentByCommentID(reviewedID);
@@ -85,7 +201,6 @@ public class PostController {
                 Review review1 = postService.getReviewByReviewID(reviewedID);
                 messageContent=fromUser.getUserName()+" 回复了您的回复 "+review1.getReviewContent();
             }
-
             SystemMessage systemMessage=new SystemMessage();
             systemMessage.setUserID(toID);
             systemMessage.setMessageType(2);
@@ -93,6 +208,29 @@ public class PostController {
             systemMessage.setMessageContent(messageContent);
             systemMessageService.addNewSystemMessage(systemMessage);
             map.put("success",true);
+        }catch (Exception e){
+            log.error(e.getMessage());
+            map.put("success",false);
+            map.put("msg","INTERNAL_ERROR");
+        }
+        return map;
+    }
+
+    @GetMapping("/showCommentAndReviews")
+    @ApiOperation("获取帖子下的评论及其回复")
+    @ApiImplicitParam(name = "postID",value = "帖子ID",required = true,dataType = "int")
+    public Map<String,Object> showCommentAndReviews(@RequestParam Integer postID){
+        Map<String,Object> map=new HashMap<>();
+        try {
+            List<Comment> commentList= postService.getCommentListByPostID(postID);
+            List<List<Review>> commentReviewList=new ArrayList<>();
+            for(Comment comment:commentList){
+                List<Review> reviewList= postService.getReviewListByCommentID(comment.getCommentID());
+                commentReviewList.add(reviewList);
+            }
+            map.put("success",true);
+            map.put("commentList",commentList);
+            map.put("commentReviewList",commentReviewList);
         }catch (Exception e){
             log.error(e.getMessage());
             map.put("success",false);

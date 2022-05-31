@@ -65,4 +65,19 @@ public class TopicServiceImpl implements TopicService {
     public List<Topic> findTopicByKeyword(String keyword){
         return topicDao.findTopicByKeyword(keyword);
     }
+
+    // 根据主题名查询主题
+    public Topic findTopicByTopicName(String topicName){
+        return topicDao.findTopicByTopicName(topicName);
+    }
+
+    // 发布主题
+    public void addNewTopic(Topic topic){
+        topicDao.addNewTopic(topic);
+    }
+
+    // 修改主题信息
+    public void editTopicByTopicID(Integer topicID,String topicName,String topicNote){
+        topicDao.editTopicByTopicID(topicID,topicName,topicNote);
+    }
 }

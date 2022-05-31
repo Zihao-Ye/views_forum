@@ -36,6 +36,9 @@ public class Post {
     @ApiModelProperty(value = "贴子发布时间")
     private Timestamp postTime;
 
+    @ApiModelProperty(value = "图片路径")
+    private String picturePath;
+
     @ApiModelProperty(value = "是否被删除")
     private Integer isDelete;
 }

@@ -39,4 +39,13 @@ public interface TopicDao {
 
     // 根据关键词搜索主题
     List<Topic> findTopicByKeyword(String keyword);
+
+    // 根据主题名查询主题
+    Topic findTopicByTopicName(String topicName);
+
+    // 发布主题
+    void addNewTopic(Topic topic);
+
+    // 修改主题信息
+    void editTopicByTopicID(Integer topicID,String topicName,String topicNote);
 }

@@ -54,4 +54,10 @@ public class ParamChecker {
         return true;
     }
 
+    public boolean checkTopicName(String topicName){
+        if(!checkNotNull(topicName) || topicName.length()<=0 || topicName.length()>=16){
+            return false;
+        }
+        return true;
+    }
 }

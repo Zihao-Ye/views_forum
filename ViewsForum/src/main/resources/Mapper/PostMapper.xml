@@ -31,4 +31,58 @@
         insert into review(reviewid, commentid, fromid, toid, reviewedid, review_content, review_type, review_time)
         values (#{reviewID},#{commentID},#{fromID},#{toID},#{reviewedID},#{reviewContent},#{reviewType},#{reviewTime})
     </insert>
+    <!-- 回复数+1-->
+    <update id="addReviewNum" parameterType="Integer">
+        update comment
+        set review_num=review_num+1
+        where commentid=#{commentID}
+    </update>
+    <!-- 回复数-1-->
+    <update id="minusReviewNum" parameterType="Integer">
+        update comment
+        set review_num=review_num-1
+        where commentid=#{commentID}
+    </update>
+    <!-- 评论数+1-->
+    <update id="addCommentNum" parameterType="Integer">
+        update post
+        set comment_num=comment_num+1
+        where postid=#{postID}
+    </update>
+    <!-- 评论数-1-->
+    <update id="minusCommentNum" parameterType="Integer">
+        update post
+        set comment_num=comment_num-1
+        where postid=#{postID}
+    </update>
+    <!-- 添加帖子-->
+    <insert id="addNewPost" parameterType="Post">
+        insert into post(postid, createid, topicid, post_name, post_time, picture_path)
+        values (#{postID},#{createID},#{topicID},#{postName},#{postTime},#{picturePath})
+    </insert>
+    <!-- 添加评论-->
+    <insert id="addNewComment" parameterType="Comment">
+        insert into comment(commentid, createid, postid, comment_content, comment_time, picture_path)
+        values (#{commentID},#{createID},#{postID},#{commentContent},#{commentTime},#{picturePath})
+    </insert>
+    <!-- 根据帖子ID获取帖子-->
+    <select id="getPostByPostID" parameterType="Integer">
+        select *
+        from post
+        where postid=#{postID}
+    </select>
+    <!-- 根据帖子ID获取帖子下评论列表-->
+    <select id="getCommentListByPostID" parameterType="Integer" resultType="Comment">
+        select *
+        from comment
+        where postid = #{postID}
+        order by comment_time desc
+    </select>
+    <!-- 根据评论ID获取评论下回复列表-->
+    <select id="getReviewListByCommentID" parameterType="Integer" resultType="Review">
+        select *
+        from review
+        where commentid=#{commentID}
+        order by review_time
+    </select>
 </mapper>

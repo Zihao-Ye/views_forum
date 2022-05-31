@@ -3,6 +3,10 @@ spring:
     url: jdbc:mysql://127.0.0.1:3306/j2ee_forum
     username: root
     password: BUAAYZH2001
+#  datasource:
+#    url: jdbc:mysql://47.94.54.192:3306
+#    username: yanlun
+#    password: yanlun2022
   jpa:
     hibernate:
       ddl-auto: update
@@ -32,6 +36,7 @@ server:
   tomcat:
     uri-encoding: UTF-8
   port: 8081
+#  port: 8080
   servlet:
     context-path: /api
 logging:
