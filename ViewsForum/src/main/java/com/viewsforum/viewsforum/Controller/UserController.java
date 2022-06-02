@@ -96,7 +96,7 @@ public class UserController {
             else{
                 User user=new User();
                 user.setUserName(userName);
-                user.setPassword(password);
+                user.setPassword(DigestUtils.md5DigestAsHex(password.getBytes(StandardCharsets.UTF_8)));
                 user.setEmail(email);
                 user.setNote("这个人还没有留言");
                 userService.addNewUser(user);
@@ -132,7 +132,7 @@ public class UserController {
                 return map;
             }
 
-            User user=userService.findUserByUserNameAndPassword(userName,password);
+            User user=userService.findUserByUserNameAndPassword(userName,DigestUtils.md5DigestAsHex(password.getBytes(StandardCharsets.UTF_8)));
             if (userService.findUserByUserName(userName)==null) {
                 map.put("success", false);
                 map.put("msg", "用户不存在");
