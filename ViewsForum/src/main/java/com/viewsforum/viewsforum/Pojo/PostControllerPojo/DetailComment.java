@@ -7,10 +7,10 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
 @ApiModel(description = "评论信息")
 public class DetailComment {
@@ -37,4 +37,8 @@ public class DetailComment {
 
     @ApiModelProperty(value = "回复列表")
     private List<DetailReview> detailReviewList;
+
+    public DetailComment(){
+        this.detailReviewList=new ArrayList<DetailReview>();
+    }
 }
