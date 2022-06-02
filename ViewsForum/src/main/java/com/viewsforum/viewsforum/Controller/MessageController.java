@@ -78,6 +78,4 @@ public class MessageController {
         }
         return map;
     }
-
-    //todo websocket实现实时通讯
 }

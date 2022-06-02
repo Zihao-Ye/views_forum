@@ -49,28 +49,28 @@
     <select id="findCreateTopicListByCreateID" parameterType="Integer" resultType="Topic">
         select *
         from topic
-        where createid=#{createID};
+        where createid=#{createID} and is_delete=0
     </select>
     <!-- 根据主题ID与关键词搜索帖子-->
     <select id="findPostByTopicIDAndKeyword" resultType="Post">
         select *
         from post
-        where topicid=#{topicID} and post_name like '%${keyword}%'
+        where topicid=#{topicID} and post_name like '%${keyword}%' and is_delete=0
     </select>
     <!-- 根据关键词搜索主题-->
     <select id="findTopicByKeyword" parameterType="Integer" resultType="Topic">
         select *
         from topic
-        where topic_name like '%${keyword}%'
+        where topic_name like '%${keyword}%' and is_delete=0
     </select>
     <!-- 根据主题名查询主题-->
     <select id="findTopicByTopicName" parameterType="String" resultType="Topic">
         select *
         from topic
-        where topic_name=#{topicName}
+        where topic_name=#{topicName} and is_delete=0
     </select>
     <!-- 发布主题-->
-    <insert id="addNewTopic" parameterType="Topic">
+    <insert id="addNewTopic" parameterType="Topic" keyProperty="topicID" useGeneratedKeys="true">
         insert into topic(topicid, createid, topic_name, topic_note, create_time)
         values (#{topicID},#{createID},#{topicName},#{topicNote},#{createTime})
     </insert>

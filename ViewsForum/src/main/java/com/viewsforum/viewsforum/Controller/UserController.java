@@ -1,6 +1,9 @@
 package com.viewsforum.viewsforum.Controller;
 
 import com.viewsforum.viewsforum.Entity.*;
+import com.viewsforum.viewsforum.Pojo.UserControllerPojo.BlackUser;
+import com.viewsforum.viewsforum.Pojo.UserControllerPojo.TopicFollowTopic;
+import com.viewsforum.viewsforum.Pojo.UserControllerPojo.UserFollowUser;
 import com.viewsforum.viewsforum.Service.*;
 import com.viewsforum.viewsforum.Utils.ParamChecker;
 import io.swagger.annotations.Api;
@@ -404,15 +407,20 @@ public class UserController {
         Map<String,Object> map=new HashMap<>();
         try {
             List<UserFollow> userFollowList=userService.getUserFollowList(userID);
-            List<User> userList=new ArrayList<>();
+            List<UserFollowUser> userFollowUserList=new ArrayList<>();
             if(userFollowList!=null&&userFollowList.size()!=0){
                 for(UserFollow userFollow:userFollowList){
-                    userList.add(userService.findUserByUserID(userFollow.getFollowedID()));
+                    Integer thisUserID=userFollow.getFollowedID();
+                    UserFollowUser userFollowUser=new UserFollowUser();
+                    userFollowUser.setUserFollowID(userFollow.getUserFollowID());
+                    userFollowUser.setFollowTime(userFollow.getFollowTime());
+                    userFollowUser.setUserID(thisUserID);
+                    userFollowUser.setUserName(userService.findUserByUserID(thisUserID).getUserName());
+                    userFollowUserList.add(userFollowUser);
                 }
             }
             map.put("success",true);
-            map.put("userFollowList",userFollowList);
-            map.put("userList",userList);
+            map.put("userFollowUserList",userFollowUserList);
         }catch (Exception e){
             log.error(e.getMessage());
             map.put("success",false);
@@ -428,15 +436,20 @@ public class UserController {
         Map<String,Object> map=new HashMap<>();
         try {
             List<Black> blackList=userService.getBlackList(userID);
-            List<User> userList=new ArrayList<>();
+            List<BlackUser> blackUserList=new ArrayList<>();
             if(blackList!=null&&blackList.size()!=0){
                 for(Black black:blackList){
-                    userList.add(userService.findUserByUserID(black.getBlackedID()));
+                    Integer thisUserID=black.getBlackedID();
+                    BlackUser blackUser=new BlackUser();
+                    blackUser.setBlackID(black.getBlackID());
+                    blackUser.setBlackedTime(black.getBlackedTime());
+                    blackUser.setUserID(thisUserID);
+                    blackUser.setUserName(userService.findUserByUserID(thisUserID).getUserName());
+                    blackUserList.add(blackUser);
                 }
             }
             map.put("success",true);
-            map.put("blackList",blackList);
-            map.put("userList",userList);
+            map.put("blackUserList",blackUserList);
         }catch (Exception e){
             log.error(e.getMessage());
             map.put("success",false);
@@ -452,15 +465,26 @@ public class UserController {
         Map<String,Object> map=new HashMap<>();
         try {
             List<TopicFollow> topicFollowList=userService.getTopicFollowList(userID);
-            List<Topic> topicList=new ArrayList<>();
+            List<TopicFollowTopic> topicFollowTopicList=new ArrayList<>();
             if(topicFollowList!=null&&topicFollowList.size()!=0){
                 for(TopicFollow topicFollow:topicFollowList){
-                    topicList.add(topicService.findTopicByTopicID(topicFollow.getTopicID()));
+                    Integer thisTopicID=topicFollow.getTopicID();
+                    Topic thisTopic=topicService.findTopicByTopicID(thisTopicID);
+                    if(thisTopic!=null){
+                        TopicFollowTopic topicFollowTopic=new TopicFollowTopic();
+                        topicFollowTopic.setTopicID(thisTopicID);
+                        topicFollowTopic.setFollowNum(thisTopic.getFollowNum());
+                        topicFollowTopic.setTopicName(thisTopic.getTopicName());
+                        topicFollowTopic.setTopicNote(thisTopic.getTopicNote());
+                        topicFollowTopic.setPostNum(thisTopic.getPostNum());
+                        topicFollowTopic.setTopicFollowID(topicFollow.getTopicFollowID());
+                        topicFollowTopic.setFollowTime(topicFollow.getFollowTime());
+                        topicFollowTopicList.add(topicFollowTopic);
+                    }
                 }
             }
             map.put("success",true);
-            map.put("topicFollowList",topicFollowList);
-            map.put("topicList",topicList);
+            map.put("topicFollowTopicList",topicFollowTopicList);
         }catch (Exception e){
             log.error(e.getMessage());
             map.put("success",false);
@@ -550,6 +574,23 @@ public class UserController {
         }catch (Exception e){
             log.error(e.getMessage());
             map.put("success",true);
+            map.put("msg","INTERNAL_ERROR");
+        }
+        return map;
+    }
+
+    @GetMapping("/userInfo")
+    @ApiOperation("/用户信息")
+    @ApiImplicitParam(name = "userID",value = "用户ID",required = true,dataType = "int")
+    public Map<String,Object> userInfo(@RequestParam Integer userID){
+        Map<String,Object> map=new HashMap<>();
+        try {
+            User user=userService.findUserByUserID(userID);
+            map.put("success",true);
+            map.put("user",user);
+        }catch (Exception e){
+            log.error(e.getMessage());
+            map.put("success",false);
             map.put("msg","INTERNAL_ERROR");
         }
         return map;

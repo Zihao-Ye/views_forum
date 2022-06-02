@@ -12,7 +12,7 @@
     <select id="getCreatePostListByCreateID" parameterType="Integer" resultType="Post">
         select *
         from post
-        where createid=#{createID}
+        where createid=#{createID} and is_delete=0
     </select>
     <!-- 根据回复ID获取回复-->
     <select id="getReviewByReviewID" parameterType="Integer" resultType="Review">
@@ -27,7 +27,7 @@
         where commentid=#{commentID}
     </select>
     <!-- 添加回复-->
-    <insert id="addNewReview" parameterType="Review">
+    <insert id="addNewReview" parameterType="Review" keyProperty="reviewID" useGeneratedKeys="true">
         insert into review(reviewid, commentid, fromid, toid, reviewedid, review_content, review_type, review_time)
         values (#{reviewID},#{commentID},#{fromID},#{toID},#{reviewedID},#{reviewContent},#{reviewType},#{reviewTime})
     </insert>
@@ -56,12 +56,12 @@
         where postid=#{postID}
     </update>
     <!-- 添加帖子-->
-    <insert id="addNewPost" parameterType="Post">
+    <insert id="addNewPost" parameterType="Post" keyProperty="postID" useGeneratedKeys="true">
         insert into post(postid, createid, topicid, post_name, post_time, picture_path)
         values (#{postID},#{createID},#{topicID},#{postName},#{postTime},#{picturePath})
     </insert>
     <!-- 添加评论-->
-    <insert id="addNewComment" parameterType="Comment">
+    <insert id="addNewComment" parameterType="Comment" keyProperty="commentID" useGeneratedKeys="true">
         insert into comment(commentid, createid, postid, comment_content, comment_time, picture_path)
         values (#{commentID},#{createID},#{postID},#{commentContent},#{commentTime},#{picturePath})
     </insert>
@@ -75,14 +75,14 @@
     <select id="getCommentListByPostID" parameterType="Integer" resultType="Comment">
         select *
         from comment
-        where postid = #{postID}
+        where postid = #{postID} and is_delete=0
         order by comment_time desc
     </select>
     <!-- 根据评论ID获取评论下回复列表-->
     <select id="getReviewListByCommentID" parameterType="Integer" resultType="Review">
         select *
         from review
-        where commentid=#{commentID}
+        where commentid=#{commentID} and is_delete=0
         order by review_time
     </select>
 </mapper>

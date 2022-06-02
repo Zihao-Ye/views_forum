@@ -1,9 +1,12 @@
 package com.viewsforum.viewsforum.Controller;
 
 import com.viewsforum.viewsforum.Entity.*;
+import com.viewsforum.viewsforum.Pojo.AdminControllerPojo.AdminApplyUser;
+import com.viewsforum.viewsforum.Pojo.AdminControllerPojo.AdminUser;
 import com.viewsforum.viewsforum.Service.AdminService;
 import com.viewsforum.viewsforum.Service.SystemMessageService;
 import com.viewsforum.viewsforum.Service.TopicService;
+import com.viewsforum.viewsforum.Service.UserService;
 import com.viewsforum.viewsforum.Utils.ParamChecker;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -18,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,6 +34,9 @@ public class AdminController {
 
     @Autowired
     private AdminService adminService;
+
+    @Autowired
+    private UserService userService;
 
     @Autowired
     private SystemMessageService systemMessageService;
@@ -61,8 +68,18 @@ public class AdminController {
             }
 
             List<Admin> adminList = adminService.findAllAdminByTopicID(topicID);
+            List<AdminUser> adminUserList=new ArrayList<>();
+            for(Admin admin:adminList){
+                Integer thisUserID=admin.getUserID();
+                AdminUser adminUser=new AdminUser();
+                adminUser.setAdminID(admin.getAdminID());
+                adminUser.setUserID(thisUserID);
+                adminUser.setAdminType(admin.getAdminType());
+                adminUser.setUserName(userService.findUserByUserID(thisUserID).getUserName());
+                adminUserList.add(adminUser);
+            }
             map.put("success",true);
-            map.put("adminList", adminList);
+            map.put("adminUserList", adminUserList);
 
         }catch (Exception e){
             log.error(e.getMessage());
@@ -96,8 +113,17 @@ public class AdminController {
             }
 
             List<AdminApply> adminApplyList = adminService.findAllAdminApplyByTopicID(topicID);
+            List<AdminApplyUser> adminApplyUserList=new ArrayList<>();
+            for(AdminApply adminApply:adminApplyList){
+                Integer thisUserID=adminApply.getUserID();
+                AdminApplyUser adminApplyUser=new AdminApplyUser();
+                adminApplyUser.setApplyID(adminApply.getApplyID());
+                adminApplyUser.setApplyTime(adminApply.getApplyTime());
+                adminApplyUser.setUserName(userService.findUserByUserID(thisUserID).getUserName());
+                adminApplyUserList.add(adminApplyUser);
+            }
             map.put("success",true);
-            map.put("adminApplyList", adminApplyList);
+            map.put("adminApplyUserList", adminApplyUserList);
 
         }catch (Exception e){
             log.error(e.getMessage());

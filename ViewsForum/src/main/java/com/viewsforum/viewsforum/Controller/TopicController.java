@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.persistence.Entity;
 import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.List;
@@ -325,6 +324,24 @@ public class TopicController {
             }
             topicService.editTopicByTopicID(topicID,topicName,topicNote);
             map.put("success",true);
+        }catch (Exception e){
+            log.error(e.getMessage());
+            map.put("success",false);
+            map.put("msg","INTERNAL_ERROR");
+        }
+        return map;
+    }
+
+    @GetMapping("/topicInfo")
+    @ApiOperation("主题信息")
+    @ApiImplicitParam(name = "topicID",value = "主题ID",required = true,dataType = "int")
+    public Map<String,Object> topicInfo(@RequestParam Integer topicID)
+    {
+        Map<String,Object> map=new HashMap<>();
+        try {
+            Topic topic=topicService.findTopicByTopicID(topicID);
+            map.put("success",true);
+            map.put("topic",topic);
         }catch (Exception e){
             log.error(e.getMessage());
             map.put("success",false);

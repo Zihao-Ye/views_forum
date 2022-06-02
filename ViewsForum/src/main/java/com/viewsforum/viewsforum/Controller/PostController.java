@@ -1,6 +1,8 @@
 package com.viewsforum.viewsforum.Controller;
 
 import com.viewsforum.viewsforum.Entity.*;
+import com.viewsforum.viewsforum.Pojo.PostControllerPojo.DetailComment;
+import com.viewsforum.viewsforum.Pojo.PostControllerPojo.DetailReview;
 import com.viewsforum.viewsforum.Service.PostService;
 import com.viewsforum.viewsforum.Service.SystemMessageService;
 import com.viewsforum.viewsforum.Service.UserService;
@@ -41,14 +43,18 @@ public class PostController {
     @ApiOperation("创建帖子")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "userID",value = "用户ID",required = true,dataType = "int"),
-            @ApiImplicitParam(name = "postName",value = "帖子名称",required = true,dataType = "String"),
+            @ApiImplicitParam(name = "postName",value = "帖子名称，1<=字符长度<=20",required = true,dataType = "String"),
             @ApiImplicitParam(name = "topicID",value = "帖子所属主题ID",required = true,dataType = "int"),
             @ApiImplicitParam(name = "img",value = "图片",required = false,dataType = "MultipartFile"),
             @ApiImplicitParam(name = "hasFile",value = "是否上传图片，0：不上传，1：上传",required = true,dataType = "int")
     })
     public Map<String,Object> addPost(@RequestParam Integer userID, @RequestParam String postName, @RequestParam Integer topicID,@RequestParam MultipartFile img,@RequestParam Integer hasFile){
         Map<String,Object> map=new HashMap<>();
-        //todo 参数检验
+        if(!paramChecker.checkPostName(postName)){
+            map.put("success",false);
+            map.put("msg","帖子名称格式错误");
+            return map;
+        }
         if(hasFile!=0&&hasFile!=1){
             map.put("success",false);
             map.put("msg","hasFile参数错误");
@@ -85,6 +91,7 @@ public class PostController {
                 }
             }
             map.put("success",true);
+            map.put("post",post);
         }catch (Exception e){
             log.error(e.getMessage());
             map.put("success",false);
@@ -97,14 +104,18 @@ public class PostController {
     @ApiOperation("创建评论")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "userID",value = "用户ID",required = true,dataType = "int"),
-            @ApiImplicitParam(name = "commentContent",value = "评论内容",required = true,dataType = "String"),
+            @ApiImplicitParam(name = "commentContent",value = "评论内容,1<=字符长度<=200",required = true,dataType = "String"),
             @ApiImplicitParam(name = "postID",value = "评论所属帖子ID",required = true,dataType = "int"),
             @ApiImplicitParam(name = "img",value = "图片",required = false,dataType = "MultipartFile"),
             @ApiImplicitParam(name = "hasFile",value = "是否上传图片，0：不上传，1：上传",required = true,dataType = "int")
     })
     public Map<String,Object> addComment(@RequestParam Integer userID, @RequestParam String commentContent, @RequestParam Integer postID,@RequestParam MultipartFile img,@RequestParam Integer hasFile){
         Map<String,Object> map=new HashMap<>();
-        //todo 参数检验
+        if(!paramChecker.checkContent(commentContent)){
+            map.put("success",false);
+            map.put("msg","评论内容格式错误");
+            return map;
+        }
         if(hasFile!=0&&hasFile!=1){
             map.put("success",false);
             map.put("msg","hasFile参数错误");
@@ -151,6 +162,7 @@ public class PostController {
             postService.addCommentNum(postID);
 
             map.put("success",true);
+            map.put("comment",comment);
         }catch (Exception e){
             log.error(e.getMessage());
             map.put("success",false);
@@ -172,7 +184,7 @@ public class PostController {
     public Map<String,Object> reviewToCommentOrReview(@RequestParam Integer fromID,@RequestParam Integer toID,@RequestParam Integer commentID,@RequestParam Integer reviewedID,@RequestParam Integer reviewType,@RequestParam String reviewContent){
         Map<String,Object> map=new HashMap<>();
         try {
-            if(!paramChecker.checkReview(reviewContent)){
+            if(!paramChecker.checkContent(reviewContent)){
                 map.put("success",false);
                 map.put("msg","回复格式错误");
                 return map;
@@ -207,7 +219,19 @@ public class PostController {
             systemMessage.setMessageTime(new Timestamp(System.currentTimeMillis()));
             systemMessage.setMessageContent(messageContent);
             systemMessageService.addNewSystemMessage(systemMessage);
+
+            DetailReview detailReview=new DetailReview();
+            detailReview.setFromID(fromID);
+            detailReview.setFromName(fromUser.getUserName());
+            detailReview.setToID(toID);
+            detailReview.setToName(toUser.getUserName());
+            detailReview.setReviewContent(reviewContent);
+            detailReview.setReviewID(review.getReviewID());
+            detailReview.setReviewType(reviewType);
+            detailReview.setReviewTime(review.getReviewTime());
+
             map.put("success",true);
+            map.put("detailReview",detailReview);
         }catch (Exception e){
             log.error(e.getMessage());
             map.put("success",false);
@@ -223,14 +247,51 @@ public class PostController {
         Map<String,Object> map=new HashMap<>();
         try {
             List<Comment> commentList= postService.getCommentListByPostID(postID);
-            List<List<Review>> commentReviewList=new ArrayList<>();
+            List<DetailComment> detailCommentList=new ArrayList<>();
             for(Comment comment:commentList){
+                DetailComment detailComment=new DetailComment();
+                detailComment.setCommentID(comment.getCommentID());
+                detailComment.setCommentContent(comment.getCommentContent());
+                detailComment.setCreateID(comment.getCreateID());
+                detailComment.setCreateName(userService.findUserByUserID(comment.getCreateID()).getUserName());
+                detailComment.setCommentTime(comment.getCommentTime());
+                detailComment.setPicturePath(comment.getPicturePath());
+                detailComment.setReviewNum(comment.getReviewNum());
                 List<Review> reviewList= postService.getReviewListByCommentID(comment.getCommentID());
-                commentReviewList.add(reviewList);
+                List<DetailReview> detailReviewList=new ArrayList<>();
+                for(Review review:reviewList){
+                    DetailReview detailReview=new DetailReview();
+                    detailReview.setReviewID(review.getReviewID());
+                    detailReview.setReviewTime(review.getReviewTime());
+                    detailReview.setReviewContent(review.getReviewContent());
+                    detailReview.setReviewType(review.getReviewType());
+                    detailReview.setFromID(review.getFromID());
+                    detailReview.setFromName(userService.findUserByUserID(review.getFromID()).getUserName());
+                    detailReview.setToID(review.getToID());
+                    detailReview.setToName(userService.findUserByUserID(review.getToID()).getUserName());
+                    detailReviewList.add(detailReview);
+                }
+                detailComment.setDetailReviewList(detailReviewList);
             }
             map.put("success",true);
-            map.put("commentList",commentList);
-            map.put("commentReviewList",commentReviewList);
+            map.put("detailCommentList",detailCommentList);
+        }catch (Exception e){
+            log.error(e.getMessage());
+            map.put("success",false);
+            map.put("msg","INTERNAL_ERROR");
+        }
+        return map;
+    }
+
+    @GetMapping("/postInfo")
+    @ApiOperation("/帖子信息")
+    @ApiImplicitParam(name = "postID",value = "帖子ID",required = true,dataType = "int")
+    public Map<String,Object> postInfo(@RequestParam Integer postID){
+        Map<String,Object> map=new HashMap<>();
+        try {
+            Post post= postService.getPostByPostID(postID);
+            map.put("success",true);
+            map.put("post",post);
         }catch (Exception e){
             log.error(e.getMessage());
             map.put("success",false);

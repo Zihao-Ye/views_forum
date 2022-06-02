@@ -14,7 +14,7 @@
         where user_name=#{userName}
     </select>
     <!-- 添加用户-->
-    <insert id="addNewUser" parameterType="User">
+    <insert id="addNewUser" parameterType="User" keyProperty="userID" useGeneratedKeys="true">
         insert into user(userid, user_name, password, email, note)
         values (#{userID},#{userName},#{password},#{email},#{note})
     </insert>

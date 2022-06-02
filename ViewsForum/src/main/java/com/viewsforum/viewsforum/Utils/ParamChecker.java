@@ -47,7 +47,7 @@ public class ParamChecker {
         return true;
     }
 
-    public boolean checkReview(String review){
+    public boolean checkContent(String review){
         if(!checkNotNull(review) || review.length()<=0 || review.length()>=201){
             return false;
         }
@@ -60,4 +60,12 @@ public class ParamChecker {
         }
         return true;
     }
+    
+    public boolean checkPostName(String postName){
+        if(!checkNotNull(postName) || postName.length()<=0 || postName.length()>=21){
+            return false;
+        }
+        return true;
+    }
+    
 }
