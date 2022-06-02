@@ -282,6 +282,7 @@ public class TopicController {
             topic.setCreateTime(new Timestamp(System.currentTimeMillis()));
             topicService.addNewTopic(topic);
             map.put("success",true);
+            map.put("topic",topic);
         }catch (Exception e){
             log.error(e.getMessage());
             map.put("success",false);
@@ -335,8 +336,7 @@ public class TopicController {
     @GetMapping("/topicInfo")
     @ApiOperation("主题信息")
     @ApiImplicitParam(name = "topicID",value = "主题ID",required = true,dataType = "int")
-    public Map<String,Object> topicInfo(@RequestParam Integer topicID)
-    {
+    public Map<String,Object> topicInfo(@RequestParam Integer topicID) {
         Map<String,Object> map=new HashMap<>();
         try {
             Topic topic=topicService.findTopicByTopicID(topicID);
