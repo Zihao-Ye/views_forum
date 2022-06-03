@@ -79,7 +79,7 @@ public class MessageController {
         return map;
     }
 
-    @GetMapping("differentMessage")
+    @GetMapping("allMessage")
     @ApiOperation("不同类别的消息（所有的）")
     @ApiImplicitParam(name = "userID",value = "用户ID",required = true,dataType = "int")
     public Map<String,Object> allMessage(@RequestParam Integer userID){
