@@ -349,4 +349,24 @@ public class TopicController {
         }
         return map;
     }
+
+    @GetMapping("/isTopicAdmin")
+    @ApiOperation("查询是否是主题管理员")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "userID",value = "用户ID",required = true,dataType = "int"),
+            @ApiImplicitParam(name = "topicID",value = "主题ID",required = true,dataType = "int")
+    })
+    public Map<String,Object> isTopicAdmin(@RequestParam Integer userID,@RequestParam Integer topicID){
+        Map<String,Object> map=new HashMap<>();
+        try {
+            boolean isTopicAdmin=adminService.findTopicAdminByUserIDAndTopicID(userID,topicID)!=null;
+            map.put("success",true);
+            map.put("isTopicAdmin",isTopicAdmin);
+        }catch (Exception e){
+            log.error(e.getMessage());
+            map.put("success",false);
+            map.put("msg","INTERNAL_ERROR");
+        }
+        return map;
+    }
 }
