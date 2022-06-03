@@ -25,7 +25,7 @@ public class MessageController {
     private SystemMessageService systemMessageService;
 
     @GetMapping("differentMessage")
-    @ApiOperation("不同类别的消息")
+    @ApiOperation("不同类别的消息（按类别）")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "userID",value = "用户ID",required = true,dataType = "int"),
             @ApiImplicitParam(name = "messageType",value = "消息类型 1：申请信息（创建者接收申请信息、申请者接收到拒绝/同意/被解除管理员信息）2：回复信息（帖子创建者接收到发言信息、发言/回复接收到回复信息） 3：关注信息（被关注信息） 4：警告/删除信息（主题被删除、帖子被删除、发言被删除、回复被删除）",required = true,dataType = "int")
@@ -44,7 +44,7 @@ public class MessageController {
         return map;
     }
 
-    @GetMapping("readOneMessage")
+    @PostMapping("readOneMessage")
     @ApiOperation("已读消息")
     @ApiImplicitParam(name = "systemMessageID",value = "系统消息ID",required = true,dataType = "int")
     public Map<String,Object> readOneMessage(@RequestParam Integer systemMessageID){
@@ -71,6 +71,23 @@ public class MessageController {
         try {
             systemMessageService.readAllSystemMessage(userID,messageType);
             map.put("success",true);
+        }catch (Exception e){
+            log.error(e.getMessage());
+            map.put("success",false);
+            map.put("msg","INTERNAL_ERROR");
+        }
+        return map;
+    }
+
+    @GetMapping("differentMessage")
+    @ApiOperation("不同类别的消息（所有的）")
+    @ApiImplicitParam(name = "userID",value = "用户ID",required = true,dataType = "int")
+    public Map<String,Object> allMessage(@RequestParam Integer userID){
+        Map<String,Object> map=new HashMap<>();
+        try {
+            List<SystemMessage> systemMessageList=systemMessageService.getAllSystemMessageByUserID(userID);
+            map.put("success",true);
+            map.put("systemMessageList",systemMessageList);
         }catch (Exception e){
             log.error(e.getMessage());
             map.put("success",false);

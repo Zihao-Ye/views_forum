@@ -14,6 +14,9 @@ public interface SystemMessageService {
     // 一键已读
     void readAllSystemMessage(Integer userID,Integer messageType);
 
-    // 获取未读系统消息
+    // 获取未读系统消息（类别）
     List<SystemMessage> getSystemMessageByUserIDAndMessageType(Integer userID,Integer messageType);
+
+    // 获取所有未读系统消息
+    List<SystemMessage> getAllSystemMessageByUserID(Integer userID);
 }

@@ -18,11 +18,18 @@
         set is_read=1
         where userid=#{userID} and message_type=#{messageType}
     </update>
-    <!-- 获取未读系统消息-->
+    <!-- 获取未读系统消息（分类）-->
     <select id="getSystemMessageByUserIDAndMessageType" parameterType="SystemMessage">
         select *
         from system_message
         where userid=#{useID} and message_type=#{messageType} and is_read=0
+        order by message_time
+    </select>
+    <!-- 获取所有未读系统消息-->
+    <select id="getAllSystemMessageByUserID" parameterType="SystemMessage">
+        select *
+        from system_message
+        where userid=#{useID} and is_read=0
         order by message_time
     </select>
 </mapper>

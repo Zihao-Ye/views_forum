@@ -28,8 +28,13 @@ public class SystemMessageServiceImpl implements SystemMessageService {
         systemMessageDao.readAllSystemMessage(userID,messageType);
     }
 
-    // 获取未读系统消息
+    // 获取未读系统消息(分类)
     public List<SystemMessage> getSystemMessageByUserIDAndMessageType(Integer userID, Integer messageType){
         return systemMessageDao.getSystemMessageByUserIDAndMessageType(userID,messageType);
+    }
+
+    // 获取所有未读系统消息
+    public List<SystemMessage> getAllSystemMessageByUserID(Integer userID){
+        return systemMessageDao.getAllSystemMessageByUserID(userID);
     }
 }

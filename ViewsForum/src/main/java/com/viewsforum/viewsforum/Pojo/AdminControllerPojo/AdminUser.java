@@ -11,10 +11,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @ApiModel(description = "管理员用户")
 public class AdminUser {
-    @ApiModelProperty(value = "用户ID")
+    @ApiModelProperty(value = "管理员用户ID")
     private Integer userID;
 
-    @ApiModelProperty(value = "用户名")
+    @ApiModelProperty(value = "管理员用户名")
     private String userName;
 
     @ApiModelProperty(value = "管理员ID")

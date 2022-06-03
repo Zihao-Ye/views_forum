@@ -13,10 +13,10 @@ import java.sql.Timestamp;
 @AllArgsConstructor
 @ApiModel(description = "黑名单用户")
 public class BlackUser {
-    @ApiModelProperty(value = "用户ID")
+    @ApiModelProperty(value = "被拉黑的用户ID")
     private Integer userID;
 
-    @ApiModelProperty(value = "用户名")
+    @ApiModelProperty(value = "被拉黑的用户名")
     private String userName;
 
     @ApiModelProperty(value = "黑名单ID")

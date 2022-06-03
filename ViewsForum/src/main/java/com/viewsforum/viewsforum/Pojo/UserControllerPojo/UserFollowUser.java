@@ -13,10 +13,10 @@ import java.sql.Timestamp;
 @AllArgsConstructor
 @ApiModel(description = "关注用户用户")
 public class UserFollowUser {
-    @ApiModelProperty(value = "用户ID")
+    @ApiModelProperty(value = "被关注的用户ID")
     private Integer userID;
 
-    @ApiModelProperty(value = "用户名")
+    @ApiModelProperty(value = "被关注的用户名")
     private String userName;
 
     @ApiModelProperty(value = "用户关注ID")

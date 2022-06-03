@@ -13,10 +13,10 @@ import java.sql.Timestamp;
 @AllArgsConstructor
 @ApiModel(description = "管理员申请用户")
 public class AdminApplyUser {
-    @ApiModelProperty(value = "用户ID")
+    @ApiModelProperty(value = "申请用户ID")
     private Integer userID;
 
-    @ApiModelProperty(value = "用户名")
+    @ApiModelProperty(value = "申请用户名")
     private String userName;
 
     @ApiModelProperty(value = "申请ID")
