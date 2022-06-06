@@ -66,8 +66,8 @@
     </select>
     <!-- 拉黑用户-->
     <insert id="blackoutUser" parameterType="Black">
-        insert into black(blackedid, blackerid, blackedid, blacked_time)
-        values (#{blackID},#{blackerID},#{blackedID},#{blackTime})
+        insert into black(blackid, blackerid, blackedid, blacked_time)
+        values (#{blackID},#{blackerID},#{blackedID},#{blackedTime})
     </insert>
     <!-- 取消拉黑用户-->
     <delete id="unBlackoutUser" parameterType="Integer">

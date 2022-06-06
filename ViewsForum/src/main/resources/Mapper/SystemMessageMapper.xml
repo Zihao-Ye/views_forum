@@ -12,24 +12,30 @@
         set is_read=1
         where system_messageid=#{systemMessageID}
     </update>
-    <!-- 一键已读-->
-    <update id="readAllSystemMessage" parameterType="SystemMessage">
+    <!-- 一键已读（类别）-->
+    <update id="readAllSystemMessageByType" parameterType="SystemMessage">
         update system_message
         set is_read=1
         where userid=#{userID} and message_type=#{messageType}
     </update>
     <!-- 获取未读系统消息（分类）-->
-    <select id="getSystemMessageByUserIDAndMessageType" parameterType="SystemMessage">
+    <select id="getSystemMessageByUserIDAndMessageType" parameterType="SystemMessage" resultType="SystemMessage">
         select *
         from system_message
-        where userid=#{useID} and message_type=#{messageType} and is_read=0
+        where userid=#{userID} and message_type=#{messageType} and is_read=0
         order by message_time
     </select>
     <!-- 获取所有未读系统消息-->
-    <select id="getAllSystemMessageByUserID" parameterType="SystemMessage">
+    <select id="getAllSystemMessageByUserID" parameterType="Integer" resultType="SystemMessage">
         select *
         from system_message
         where userid=#{useID} and is_read=0
         order by message_time
     </select>
+    <!-- 一键已读（所有）-->
+    <update id="readAllSystemMessage" parameterType="Integer">
+        update system_message
+        set is_read=1
+        where userid=#{userID}
+    </update>
 </mapper>

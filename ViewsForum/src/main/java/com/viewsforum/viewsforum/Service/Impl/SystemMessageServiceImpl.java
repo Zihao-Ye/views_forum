@@ -23,9 +23,9 @@ public class SystemMessageServiceImpl implements SystemMessageService {
         systemMessageDao.readOneSysTemMessage(systemMessageID);
     }
 
-    // 一键已读
-    public void readAllSystemMessage(Integer userID,Integer messageType){
-        systemMessageDao.readAllSystemMessage(userID,messageType);
+    // 一键已读（类别）
+    public void readAllSystemMessageByType(Integer userID,Integer messageType){
+        systemMessageDao.readAllSystemMessageByType(userID,messageType);
     }
 
     // 获取未读系统消息(分类)
@@ -36,5 +36,10 @@ public class SystemMessageServiceImpl implements SystemMessageService {
     // 获取所有未读系统消息
     public List<SystemMessage> getAllSystemMessageByUserID(Integer userID){
         return systemMessageDao.getAllSystemMessageByUserID(userID);
+    }
+
+    //一键已读（所有）
+    public void readAllSystemMessage(Integer userID){
+        systemMessageDao.readAllSystemMessage(userID);
     }
 }

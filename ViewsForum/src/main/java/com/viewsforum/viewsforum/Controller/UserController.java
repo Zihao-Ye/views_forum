@@ -53,11 +53,11 @@ public class UserController {
 
 
 
-    @PostMapping("/register")
+    @PostMapping("/register")//已测试
     @ApiOperation("用户注册")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "userName", value = "用户名，5<=字符长度<=20", required = true, dataType = "String"),
-            @ApiImplicitParam(name = "password", value = "密码，6-10位，必须由数字或字母组成", required = true, dataType = "String"),
+            @ApiImplicitParam(name = "password", value = "密码，6-10位，必须由数字和字母组成", required = true, dataType = "String"),
             @ApiImplicitParam(name = "rePassword", value = "重新确认密码", required = true, dataType = "String"),
             @ApiImplicitParam(name = "email", value = "邮箱，遵循正则匹配：\n(^[a-zA-Z0-9]{1,10}@[a-zA-Z0-9]{1,5}\\.[a-zA-Z0-9]{1,5})", required = true, dataType = "String")
     })
@@ -111,11 +111,11 @@ public class UserController {
         return map;
     }
 
-    @PostMapping("/login")
+    @PostMapping("/login")//已测试
     @ApiOperation("登录")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "userName",value="用户名，5<=字符长度<=20",required = true,dataType = "String"),
-            @ApiImplicitParam(name = "password",value="用户密码，6-10位，必须由数字或字母组成",required = true,dataType = "String")
+            @ApiImplicitParam(name = "password",value="用户密码，6-10位，必须由数字和字母组成",required = true,dataType = "String")
     })
     public Map<String,Object> login(HttpServletRequest request, @RequestParam String userName, @RequestParam String password){
         Map<String, Object> map = new HashMap<>();
@@ -157,7 +157,7 @@ public class UserController {
         return map;
     }
 
-    @PostMapping("/forgetPassword")
+    @PostMapping("/forgetPassword")//已测试
     @ApiOperation("忘记密码")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "userName",value="用户名，5<=字符长度<=20",required = true,dataType = "String"),
@@ -200,12 +200,12 @@ public class UserController {
         return map;
     }
 
-    @PostMapping("/verify")
+    @PostMapping("/verify")//已测试
     @ApiOperation("验证验证码")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "userName",value="用户名，5<=字符长度<=20",required = true,dataType = "String"),
-            @ApiImplicitParam(name = "password",value="密码，6-10位，必须由数字或字母组成",required = true,dataType = "String"),
-            @ApiImplicitParam(name = "rePassword",value = "重新确认密码，6-10位，必须由数字或字母组成",required = true,dataType = "String"),
+            @ApiImplicitParam(name = "password",value="密码，6-10位，必须由数字和字母组成",required = true,dataType = "String"),
+            @ApiImplicitParam(name = "rePassword",value = "重新确认密码，6-10位，必须由数字和字母组成",required = true,dataType = "String"),
             @ApiImplicitParam(name = "code",value = "验证码",required = true,dataType = "String")
     })
     public Map<String,Object> resetPassword(HttpServletRequest request,@RequestParam String userName,@RequestParam String password,@RequestParam String rePassword,@RequestParam String code){
@@ -243,7 +243,7 @@ public class UserController {
         return map;
     }
 
-    @PostMapping("/logout")
+    @PostMapping("/logout")//已测试
     @ApiOperation("注销接口")
     public Map<String,Object> logout (HttpServletRequest request){
         Map<String ,Object> map=new HashMap<>();
@@ -259,7 +259,7 @@ public class UserController {
         return map;
     }
 
-    @PostMapping("/followUser")
+    @PostMapping("/followUser")//已测试
     @ApiOperation("关注用户")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "followerID",value = "关注者ID",required = true,dataType = "int"),
@@ -299,7 +299,7 @@ public class UserController {
         return map;
     }
 
-    @PostMapping("/unFollowUser")
+    @PostMapping("/unFollowUser")//已测试
     @ApiOperation("取消关注用户")
     @ApiImplicitParam(name = "userFollowID",value = "用户关注ID",required = true,dataType = "int")
     public Map<String,Object> unFollowUser(@RequestParam Integer userFollowID){
@@ -315,7 +315,7 @@ public class UserController {
         return map;
     }
 
-    @PostMapping("/blackoutUser")
+    @PostMapping("/blackoutUser")//已测试
     @ApiOperation("拉黑用户")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "blackerID",value = "拉黑者ID",required = true,dataType = "int"),
@@ -344,7 +344,7 @@ public class UserController {
         return map;
     }
 
-    @PostMapping("/unBlackoutUser")
+    @PostMapping("/unBlackoutUser")//已测试
     @ApiOperation("取消拉黑用户")
     @ApiImplicitParam(name = "blackID",value = "黑名单ID",required = true,dataType = "int")
     public Map<String,Object> unBlackoutUser(@RequestParam Integer blackID){
@@ -360,7 +360,7 @@ public class UserController {
         return map;
     }
 
-    @GetMapping("/isFollowUser")
+    @GetMapping("/isFollowUser")//已测试
     @ApiOperation("查询是否已关注用户")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "followerID",value = "关注者ID",required = true,dataType = "int"),
@@ -380,7 +380,7 @@ public class UserController {
         return map;
     }
 
-    @GetMapping("/isBlackoutUser")
+    @GetMapping("/isBlackoutUser")//已测试
     @ApiOperation("查询是否已拉黑用户")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "blackerID",value = "拉黑者ID",required = true,dataType = "int"),
@@ -400,7 +400,7 @@ public class UserController {
         return map;
     }
 
-    @GetMapping("/getUserFollowList")
+    @GetMapping("/getUserFollowList")//已测试
     @ApiOperation("关注用户列表")
     @ApiImplicitParam(name = "userID",value = "用户ID",required = true,dataType = "int")
     public Map<String,Object> getUserFollowList(@RequestParam Integer userID){
@@ -429,7 +429,7 @@ public class UserController {
         return map;
     }
 
-    @GetMapping("/getBlackList")
+    @GetMapping("/getBlackList")//已测试
     @ApiOperation("拉黑用户列表")
     @ApiImplicitParam(name = "userID",value = "用户ID",required = true,dataType = "int")
     public Map<String,Object> getBlackList(@RequestParam Integer userID){
@@ -527,7 +527,7 @@ public class UserController {
         return map;
     }
 
-    @PostMapping("/editUserInfo")
+    @PostMapping("/editUserInfo")//已测试
     @ApiOperation("修改个人信息")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "userID",value = "用户ID",required = true,dataType = "String"),
@@ -579,7 +579,7 @@ public class UserController {
         return map;
     }
 
-    @GetMapping("/userInfo")
+    @GetMapping("/userInfo")//已测试
     @ApiOperation("/用户信息")
     @ApiImplicitParam(name = "userID",value = "用户ID",required = true,dataType = "int")
     public Map<String,Object> userInfo(@RequestParam Integer userID){
