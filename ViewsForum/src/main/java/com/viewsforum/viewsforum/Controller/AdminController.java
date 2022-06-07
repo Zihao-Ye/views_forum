@@ -44,7 +44,7 @@ public class AdminController {
     @Autowired
     private TopicService topicService;
 
-    @GetMapping("/allAdmin")
+    @GetMapping("/allAdmin")//已测试
     @ApiOperation("获取主题的所有管理员")
     @ApiImplicitParam(name = "topicID", value = "主题ID",required = true,dataType = "int")
     public Map<String,Object> allAdmin(HttpServletRequest request, @RequestParam Integer topicID){
@@ -89,7 +89,7 @@ public class AdminController {
         return map;
     }
 
-    @GetMapping("/allAdminApplies")
+    @GetMapping("/allAdminApplies")//已测试
     @ApiOperation("获取主题的管理员申请")
     @ApiImplicitParam(name = "topicID", value = "主题ID",required = true,dataType = "int")
     public Map<String,Object> allAdminApplies(HttpServletRequest request, @RequestParam Integer topicID){
@@ -120,6 +120,7 @@ public class AdminController {
                 adminApplyUser.setApplyID(adminApply.getApplyID());
                 adminApplyUser.setApplyTime(adminApply.getApplyTime());
                 adminApplyUser.setUserName(userService.findUserByUserID(thisUserID).getUserName());
+                adminApplyUser.setUserID(userService.findUserByUserID(thisUserID).getUserID());
                 adminApplyUserList.add(adminApplyUser);
             }
             map.put("success",true);
@@ -133,7 +134,7 @@ public class AdminController {
         return map;
     }
 
-    @PostMapping("/agreeApply")
+    @PostMapping("/agreeApply")//已测试
     @ApiOperation("同意申请")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "topicID", value = "主题ID",required = true,dataType = "int"),
@@ -190,7 +191,7 @@ public class AdminController {
         return map;
     }
 
-    @PostMapping("/rejectApply")
+    @PostMapping("/rejectApply")//已测试
     @ApiOperation("拒绝申请")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "topicID", value = "主题ID",required = true,dataType = "int"),
@@ -240,11 +241,11 @@ public class AdminController {
         return map;
     }
 
-    @PostMapping("/deleteAdmin")
+    @PostMapping("/deleteAdmin")//已测试
     @ApiOperation("删除管理员")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "topicID", value = "主题ID",required = true,dataType = "int"),
-            @ApiImplicitParam(name = "adminID", value = "管理员申请ID",required = true,dataType = "int")
+            @ApiImplicitParam(name = "adminID", value = "管理员ID",required = true,dataType = "int")
     })
     public Map<String,Object> deleteAdmin(HttpServletRequest request, @RequestParam Integer topicID,@RequestParam Integer adminID){
         Map<String,Object> map=new HashMap<>();

@@ -40,7 +40,7 @@ public class TopicController {
     @Autowired
     private PostService postService;
 
-    @PostMapping("/applyForAdmin")
+    @PostMapping("/applyForAdmin")//已测试
     @ApiOperation("申请主题管理员")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "userID",value = "用户ID",required = true,dataType = "int"),
@@ -113,7 +113,7 @@ public class TopicController {
         return map;
     }
 
-    @PostMapping("/followTopic")
+    @PostMapping("/followTopic")//已测试
     @ApiOperation("关注主题")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "userID",value = "用户ID",required = true,dataType = "int"),
@@ -162,7 +162,7 @@ public class TopicController {
         return map;
     }
 
-    @PostMapping("/unFollowTopic")
+    @PostMapping("/unFollowTopic")//已测试
     @ApiOperation("取消关注主题")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "userID",value = "用户ID",required = true,dataType = "int"),
@@ -193,7 +193,7 @@ public class TopicController {
         return map;
     }
 
-    @GetMapping("/isFollowTopic")
+    @GetMapping("/isFollowTopic")//已测试
     @ApiOperation("查询是否关注主题")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "userID",value = "用户ID",required = true,dataType = "int"),
@@ -233,7 +233,7 @@ public class TopicController {
         return map;
     }
 
-    @GetMapping("/searchTopic")
+    @GetMapping("/searchTopic")//已测试
     @ApiOperation("/搜索主题")
     @ApiImplicitParam(name = "keyword",value = "搜索关键词",required = true,dataType = "String")
     public Map<String,Object> searchTopic(@RequestParam String keyword){
@@ -250,12 +250,12 @@ public class TopicController {
         return map;
     }
 
-    @PostMapping("/addTopic")
+    @PostMapping("/addTopic")//已测试
     @ApiOperation("发布主题")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "userID",value = "创建者ID",required = true,dataType = "int"),
             @ApiImplicitParam(name = "topicName",value = "主题名，1<=字符长度<=15",required = true,dataType = "String"),
-            @ApiImplicitParam(name = "topicNote",value = "主题说明，1<=字符长度<=201",required = true,dataType = "String")
+            @ApiImplicitParam(name = "topicNote",value = "主题说明，1<=字符长度<=200",required = true,dataType = "String")
     })
     public Map<String,Object> addTopic(@RequestParam Integer userID, @RequestParam String topicName,@RequestParam String topicNote){
         Map<String,Object> map=new HashMap<>();
@@ -281,6 +281,17 @@ public class TopicController {
             topic.setTopicNote(topicNote);
             topic.setCreateTime(new Timestamp(System.currentTimeMillis()));
             topicService.addNewTopic(topic);
+            topic.setFollowNum(0);
+            topic.setIsDelete(0);
+            topic.setPostNum(0);
+
+            // 设置管理员
+            Admin admin =new Admin();
+            admin.setUserID(userID);
+            admin.setTopicID(topic.getTopicID());
+            admin.setAdminType(1);
+            adminService.addNewTopicAdmin(admin);
+
             map.put("success",true);
             map.put("topic",topic);
         }catch (Exception e){
@@ -291,13 +302,13 @@ public class TopicController {
         return map;
     }
 
-    @PostMapping("/editTopic")
+    @PostMapping("/editTopic")//已测试
     @ApiOperation("修改主题信息")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "userID",value = "用户ID",required = true,dataType = "int"),
             @ApiImplicitParam(name = "topicID",value = "主题ID",required = true,dataType = "int"),
             @ApiImplicitParam(name = "topicName",value = "主题名，1<=字符长度<=15",required = true,dataType = "String"),
-            @ApiImplicitParam(name = "topicNote",value = "主题说明，1<=字符长度<=201",required = true,dataType = "String")
+            @ApiImplicitParam(name = "topicNote",value = "主题说明，1<=字符长度<=200",required = true,dataType = "String")
     })
     public Map<String,Object> editTopic(@RequestParam Integer userID,@RequestParam Integer topicID, @RequestParam String topicName,@RequestParam String topicNote){
         Map<String,Object> map=new HashMap<>();
@@ -333,7 +344,7 @@ public class TopicController {
         return map;
     }
 
-    @GetMapping("/topicInfo")
+    @GetMapping("/topicInfo")//已测试
     @ApiOperation("主题信息")
     @ApiImplicitParam(name = "topicID",value = "主题ID",required = true,dataType = "int")
     public Map<String,Object> topicInfo(@RequestParam Integer topicID) {
@@ -350,7 +361,7 @@ public class TopicController {
         return map;
     }
 
-    @GetMapping("/isTopicAdmin")
+    @GetMapping("/isTopicAdmin")//已测试
     @ApiOperation("查询是否是主题管理员")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "userID",value = "用户ID",required = true,dataType = "int"),

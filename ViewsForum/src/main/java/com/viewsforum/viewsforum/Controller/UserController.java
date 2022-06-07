@@ -458,7 +458,7 @@ public class UserController {
         return map;
     }
 
-    @GetMapping("/getTopicFollowList")
+    @GetMapping("/getTopicFollowList")//已测试
     @ApiOperation("关注主题列表")
     @ApiImplicitParam(name = "userID",value = "用户ID",required = true,dataType = "int")
     public Map<String,Object> getTopicFollowList(@RequestParam Integer userID){
@@ -493,7 +493,7 @@ public class UserController {
         return map;
     }
 
-    @GetMapping("/getMyTopic")
+    @GetMapping("/getMyTopic")//已测试
     @ApiOperation("发布的主题列表")
     @ApiImplicitParam(name = "userID",value = "用户ID",required = true,dataType = "int")
     public Map<String,Object> getMyTopic(@RequestParam Integer userID){
