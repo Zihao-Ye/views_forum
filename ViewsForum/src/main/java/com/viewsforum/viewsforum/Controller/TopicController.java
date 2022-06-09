@@ -96,7 +96,7 @@ public class TopicController {
         return map;
     }
 
-    @GetMapping("/allPost")
+    @GetMapping("/allPost")//已测试
     @ApiOperation("获取帖子列表")
     @ApiImplicitParam(name = "topicID",value = "主题ID",required = true,dataType = "int")
     public Map<String,Object> allPost(@RequestParam Integer topicID){
@@ -213,7 +213,7 @@ public class TopicController {
         return map;
     }
 
-    @GetMapping("/searchPost")
+    @GetMapping("/searchPost")//已测试
     @ApiOperation("/搜索主题下帖子")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "topicID",value = "主题ID",required = true,dataType = "int"),

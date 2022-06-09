@@ -36,7 +36,7 @@ public class Comment {
     @ApiModelProperty(value = "评论下回复数")
     private Integer reviewNum;
 
-    @ApiModelProperty(value = "图片路径")
+    @ApiModelProperty(value = "图片路径，若未上传文件，则此路径存储为‘null’")
     private String picturePath;
 
     @ApiModelProperty(value = "是否被删除")

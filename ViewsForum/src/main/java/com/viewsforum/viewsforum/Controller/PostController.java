@@ -5,6 +5,7 @@ import com.viewsforum.viewsforum.Pojo.PostControllerPojo.DetailComment;
 import com.viewsforum.viewsforum.Pojo.PostControllerPojo.DetailReview;
 import com.viewsforum.viewsforum.Service.PostService;
 import com.viewsforum.viewsforum.Service.SystemMessageService;
+import com.viewsforum.viewsforum.Service.TopicService;
 import com.viewsforum.viewsforum.Service.UserService;
 import com.viewsforum.viewsforum.Utils.ParamChecker;
 import io.swagger.annotations.Api;
@@ -37,9 +38,12 @@ public class PostController {
     private PostService postService;
 
     @Autowired
+    private TopicService topicService;
+
+    @Autowired
     private SystemMessageService systemMessageService;
 
-    @PostMapping("/addPost")
+    @PostMapping("/addPost")//已测试
     @ApiOperation("创建帖子")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "userID",value = "用户ID",required = true,dataType = "int"),
@@ -71,9 +75,12 @@ public class PostController {
             post.setCreateID(userID);
             post.setTopicID(topicID);
             post.setPostTime(new Timestamp(System.currentTimeMillis()));
+            post.setCommentNum(0);
+            post.setIsDelete(0);
             if(hasFile==0){
                 post.setPicturePath("null");
                 postService.addNewPost(post);
+                topicService.addTopicPostNum(topicID);
             }
             else{
                 try {
@@ -84,6 +91,7 @@ public class PostController {
                     String picturePath=dest.getPath();
                     post.setPicturePath(picturePath);
                     postService.addNewPost(post);
+                    topicService.addTopicPostNum(topicID);
                 }catch (IOException ioException){
                     log.error(ioException.getMessage());
                     map.put("success",false);
@@ -100,7 +108,7 @@ public class PostController {
         return map;
     }
 
-    @PostMapping("/addComment")
+    @PostMapping("/addComment")//已测试
     @ApiOperation("创建评论")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "userID",value = "用户ID",required = true,dataType = "int"),
@@ -132,6 +140,8 @@ public class PostController {
             comment.setCreateID(userID);
             comment.setPostID(postID);
             comment.setCommentTime(new Timestamp(System.currentTimeMillis()));
+            comment.setIsDelete(0);
+            comment.setReviewNum(0);
             if(hasFile==0){
                 comment.setPicturePath("null");
                 postService.addNewComment(comment);
@@ -171,7 +181,7 @@ public class PostController {
         return map;
     }
 
-    @PostMapping("/reviewToCommentOrReview")
+    @PostMapping("/reviewToCommentOrReview")//已测试
     @ApiOperation("回复评论或回复")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "fromID",value = "回复者ID",required = true,dataType = "int"),
@@ -240,7 +250,7 @@ public class PostController {
         return map;
     }
 
-    @GetMapping("/showCommentAndReviews")
+    @GetMapping("/showCommentAndReviews")//已测试
     @ApiOperation("获取帖子下的评论及其回复")
     @ApiImplicitParam(name = "postID",value = "帖子ID",required = true,dataType = "int")
     public Map<String,Object> showCommentAndReviews(@RequestParam Integer postID){
@@ -272,6 +282,7 @@ public class PostController {
                     detailReviewList.add(detailReview);
                 }
                 detailComment.setDetailReviewList(detailReviewList);
+                detailCommentList.add(detailComment);
             }
             map.put("success",true);
             map.put("detailCommentList",detailCommentList);
@@ -283,7 +294,7 @@ public class PostController {
         return map;
     }
 
-    @GetMapping("/postInfo")
+    @GetMapping("/postInfo")//已测试
     @ApiOperation("/帖子信息")
     @ApiImplicitParam(name = "postID",value = "帖子ID",required = true,dataType = "int")
     public Map<String,Object> postInfo(@RequestParam Integer postID){

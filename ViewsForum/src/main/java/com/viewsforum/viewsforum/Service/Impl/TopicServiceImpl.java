@@ -80,4 +80,14 @@ public class TopicServiceImpl implements TopicService {
     public void editTopicByTopicID(Integer topicID,String topicName,String topicNote){
         topicDao.editTopicByTopicID(topicID,topicName,topicNote);
     }
+
+    // 贴子数+1
+    public void addTopicPostNum(Integer topicID){
+        topicDao.addTopicPostNum(topicID);
+    }
+
+    // 贴子数-1
+    public void minusTopicPostNum(Integer topicID){
+        topicDao.minusTopicPostNum(topicID);
+    }
 }

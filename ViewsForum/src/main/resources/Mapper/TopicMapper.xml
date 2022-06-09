@@ -80,4 +80,16 @@
         set topic_name=#{topicName},topic_note=#{topicNote}
         where topicid=#{topicID}
     </update>
+    <!-- 贴子数+1-->
+    <update id="addTopicPostNum" parameterType="Integer">
+        update topic
+        set post_num=post_num+1
+        where topicid=#{topicID}
+    </update>
+    <!-- 贴子数-1-->
+    <update id="minusTopicPostNum" parameterType="Integer">
+        update topic
+        set post_num=post_num-1
+        where topicid=#{topicID}
+    </update>
 </mapper>

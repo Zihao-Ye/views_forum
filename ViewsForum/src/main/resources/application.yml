@@ -26,6 +26,7 @@ spring:
       max-file-size: 100MB
       max-request-size: 200MB
       location: /home/viewsForum/file
+#      location: C:\Users\11604\Desktop\大三下\JavaEE架构\大作业\测试图片
       enabled: true
 mybatis:
   mapper-locations: classpath:Mapper/*.xml

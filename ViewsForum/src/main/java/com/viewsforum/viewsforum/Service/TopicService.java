@@ -46,4 +46,10 @@ public interface TopicService {
 
     // 修改主题信息
     void editTopicByTopicID(Integer topicID,String topicName,String topicNote);
+
+    // 贴子数+1
+    void addTopicPostNum(Integer topicID);
+
+    // 贴子数-1
+    void minusTopicPostNum(Integer topicID);
 }
