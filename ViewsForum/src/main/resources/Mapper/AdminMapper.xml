@@ -71,4 +71,28 @@
         delete from admin
         where adminid=#{adminID}
     </delete>
+    <!-- 根据主题ID删除主题-->
+    <update id="deleteTopic" parameterType="Integer">
+        update topic
+        set is_delete=1
+        where topicid=#{topicID}
+    </update>
+    <!-- 根据帖子ID删除帖子-->
+    <update id="deletePost" parameterType="Integer">
+        update post
+        set is_delete=1
+        where postid=#{postID}
+    </update>
+    <!-- 根据评论ID删除评论-->
+    <update id="deleteComment" parameterType="Integer">
+        update comment
+        set is_delete=1
+        where commentid=#{commentID}
+    </update>
+    <!-- 根据回复ID删除回复-->
+    <update id="deleteReview" parameterType="Integer">
+        update review
+        set is_delete=1
+        where reviewid=#{reviewID}
+    </update>
 </mapper>

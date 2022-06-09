@@ -470,7 +470,7 @@ public class UserController {
                 for(TopicFollow topicFollow:topicFollowList){
                     Integer thisTopicID=topicFollow.getTopicID();
                     Topic thisTopic=topicService.findTopicByTopicID(thisTopicID);
-                    if(thisTopic!=null){
+                    if(thisTopic!=null&&thisTopic.getIsDelete()==0){
                         TopicFollowTopic topicFollowTopic=new TopicFollowTopic();
                         topicFollowTopic.setTopicID(thisTopicID);
                         topicFollowTopic.setFollowNum(thisTopic.getFollowNum());
@@ -510,7 +510,7 @@ public class UserController {
         return map;
     }
 
-    @GetMapping("/getMyPost")
+    @GetMapping("/getMyPost")//已测试
     @ApiOperation("发布的帖子列表")
     @ApiImplicitParam(name = "userID",value = "用户ID",required = true,dataType = "int")
     public Map<String,Object> getMyPost(@RequestParam Integer userID){

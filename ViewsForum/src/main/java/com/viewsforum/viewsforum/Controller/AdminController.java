@@ -3,10 +3,7 @@ package com.viewsforum.viewsforum.Controller;
 import com.viewsforum.viewsforum.Entity.*;
 import com.viewsforum.viewsforum.Pojo.AdminControllerPojo.AdminApplyUser;
 import com.viewsforum.viewsforum.Pojo.AdminControllerPojo.AdminUser;
-import com.viewsforum.viewsforum.Service.AdminService;
-import com.viewsforum.viewsforum.Service.SystemMessageService;
-import com.viewsforum.viewsforum.Service.TopicService;
-import com.viewsforum.viewsforum.Service.UserService;
+import com.viewsforum.viewsforum.Service.*;
 import com.viewsforum.viewsforum.Utils.ParamChecker;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -43,6 +40,9 @@ public class AdminController {
 
     @Autowired
     private TopicService topicService;
+
+    @Autowired
+    private PostService postService;
 
     @GetMapping("/allAdmin")//已测试
     @ApiOperation("获取主题的所有管理员")
@@ -138,7 +138,7 @@ public class AdminController {
     @ApiOperation("同意申请")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "topicID", value = "主题ID",required = true,dataType = "int"),
-            @ApiImplicitParam(name = "ApplyID", value = "管理员申请ID",required = true,dataType = "int")
+            @ApiImplicitParam(name = "applyID", value = "管理员申请ID",required = true,dataType = "int")
     })
     public Map<String,Object> agreeApply(HttpServletRequest request, @RequestParam Integer topicID,@RequestParam Integer applyID){
         Map<String,Object> map=new HashMap<>();
@@ -195,7 +195,7 @@ public class AdminController {
     @ApiOperation("拒绝申请")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "topicID", value = "主题ID",required = true,dataType = "int"),
-            @ApiImplicitParam(name = "ApplyID", value = "管理员申请ID",required = true,dataType = "int")
+            @ApiImplicitParam(name = "applyID", value = "管理员申请ID",required = true,dataType = "int")
     })
     public Map<String,Object> rejectApply(HttpServletRequest request, @RequestParam Integer topicID,@RequestParam Integer applyID){
         Map<String,Object> map=new HashMap<>();
@@ -291,5 +291,160 @@ public class AdminController {
         return map;
     }
 
-    //todo 各种删除操作
+    @PostMapping("/deleteTopic")
+    @ApiOperation("删除主题")
+    @ApiImplicitParam(name = "topicID",value = "主题ID",required = true,dataType = "int")
+    public Map<String,Object> deleteTopic(HttpServletRequest request, @RequestParam Integer topicID){
+        Map<String,Object> map=new HashMap<>();
+        try {
+            if(request.getSession().getAttribute("userID")==null){
+                map.put("success",false);
+                map.put("msg","未登录");
+                return map;
+            }
+            Integer userID = (Integer) request.getSession().getAttribute("userID");
+            if(adminService.findSystemAdminByUserID(userID)==null&&adminService.findTopicCreatorByUserIDAndTopicID(userID,topicID)==null){
+                map.put("success",false);
+                map.put("msg","权限不足");
+                return map;
+            }
+
+            adminService.deleteTopic(topicID);
+
+            Topic topic=topicService.findTopicByTopicID(topicID);
+            SystemMessage systemMessage = new SystemMessage();
+            systemMessage.setUserID(topic.getCreateID());
+            systemMessage.setMessageType(4);
+            systemMessage.setMessageContent("您创建的主题 "+topic.getTopicName()+" 因违规被删除，请联系管理员");
+            systemMessage.setMessageTime(new Timestamp(System.currentTimeMillis()));
+            systemMessageService.addNewSystemMessage(systemMessage);
+
+            map.put("success",true);
+        }catch (Exception e){
+            log.error(e.getMessage());
+            map.put("success",false);
+            map.put("msg","INTERNAL_ERROR");
+        }
+        return map;
+    }
+
+    @PostMapping("/deletePost")
+    @ApiOperation("删除帖子")
+    @ApiImplicitParam(name = "postID",value = "帖子ID",required = true,dataType = "int")
+    public Map<String,Object> deletePost(HttpServletRequest request, @RequestParam Integer postID){
+        Map<String,Object> map=new HashMap<>();
+        try {
+            if(request.getSession().getAttribute("userID")==null){
+                map.put("success",false);
+                map.put("msg","未登录");
+                return map;
+            }
+            Integer userID = (Integer) request.getSession().getAttribute("userID");
+            Post post=postService.getPostByPostID(postID);
+            if(adminService.findTopicAdminByUserIDAndTopicID(userID,post.getTopicID())==null){
+                map.put("success",false);
+                map.put("msg","权限不足");
+                return map;
+            }
+
+            adminService.deletePost(postID);
+
+            topicService.minusTopicPostNum(post.getTopicID());
+
+            SystemMessage systemMessage = new SystemMessage();
+            systemMessage.setUserID(post.getCreateID());
+            systemMessage.setMessageType(4);
+            systemMessage.setMessageContent("您创建的的帖子 "+post.getPostName()+" 因违规被删除，请联系管理员");
+            systemMessage.setMessageTime(new Timestamp(System.currentTimeMillis()));
+            systemMessageService.addNewSystemMessage(systemMessage);
+
+            map.put("success",true);
+        }catch (Exception e){
+            log.error(e.getMessage());
+            map.put("success",false);
+            map.put("msg","INTERNAL_ERROR");
+        }
+        return map;
+    }
+
+    @PostMapping("/deleteComment")
+    @ApiOperation("删除评论")
+    @ApiImplicitParam(name = "commentID",value = "评论ID",required = true,dataType = "int")
+    public Map<String,Object> deleteComment(HttpServletRequest request, @RequestParam Integer commentID){
+        Map<String,Object> map=new HashMap<>();
+        try {
+            if(request.getSession().getAttribute("userID")==null){
+                map.put("success",false);
+                map.put("msg","未登录");
+                return map;
+            }
+            Integer userID = (Integer) request.getSession().getAttribute("userID");
+            Comment comment=postService.getCommentByCommentID(commentID);
+            Post post=postService.getPostByPostID(comment.getPostID());
+            if(adminService.findTopicCreatorByUserIDAndTopicID(userID,post.getTopicID())==null){
+                map.put("success",false);
+                map.put("msg","权限不足");
+                return map;
+            }
+
+            adminService.deleteComment(commentID);
+
+            postService.minusCommentNum(post.getPostID());
+
+            SystemMessage systemMessage = new SystemMessage();
+            systemMessage.setUserID(comment.getCreateID());
+            systemMessage.setMessageType(4);
+            systemMessage.setMessageContent("您创建的评论 "+comment.getCommentContent()+" 因违规被删除，请联系管理员");
+            systemMessage.setMessageTime(new Timestamp(System.currentTimeMillis()));
+            systemMessageService.addNewSystemMessage(systemMessage);
+
+            map.put("success",true);
+        }catch (Exception e){
+            log.error(e.getMessage());
+            map.put("success",false);
+            map.put("msg","INTERNAL_ERROR");
+        }
+        return map;
+    }
+
+    @PostMapping("/deleteReview")
+    @ApiOperation("删除回复")
+    @ApiImplicitParam(name = "reviewID",value = "回复ID",required = true,dataType = "int")
+    public Map<String,Object> deleteReview(HttpServletRequest request, @RequestParam Integer reviewID){
+        Map<String,Object> map=new HashMap<>();
+        try {
+            if(request.getSession().getAttribute("userID")==null){
+                map.put("success",false);
+                map.put("msg","未登录");
+                return map;
+            }
+            Integer userID = (Integer) request.getSession().getAttribute("userID");
+            Review review=postService.getReviewByReviewID(reviewID);
+            Comment comment=postService.getCommentByCommentID(review.getCommentID());
+            Post post=postService.getPostByPostID(comment.getPostID());
+            if(adminService.findTopicCreatorByUserIDAndTopicID(userID,post.getTopicID())==null){
+                map.put("success",false);
+                map.put("msg","权限不足");
+                return map;
+            }
+
+            adminService.deleteReview(reviewID);
+
+            postService.minusReviewNum(comment.getCommentID());
+
+            SystemMessage systemMessage = new SystemMessage();
+            systemMessage.setUserID(review.getFromID());
+            systemMessage.setMessageType(4);
+            systemMessage.setMessageContent("您创建的回复 "+review.getReviewContent()+" 因违规被删除，请联系管理员");
+            systemMessage.setMessageTime(new Timestamp(System.currentTimeMillis()));
+            systemMessageService.addNewSystemMessage(systemMessage);
+
+            map.put("success",true);
+        }catch (Exception e){
+            log.error(e.getMessage());
+            map.put("success",false);
+            map.put("msg","INTERNAL_ERROR");
+        }
+        return map;
+    }
 }

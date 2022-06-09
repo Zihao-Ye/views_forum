@@ -74,4 +74,24 @@ public class AdminServiceImpl implements AdminService {
     public void deleteAdmin(Integer adminID){
         adminDao.deleteAdmin(adminID);
     }
+
+    // 根据主题ID删除主题
+    public void deleteTopic(Integer topicID){
+        adminDao.deleteTopic(topicID);
+    }
+
+    // 根据帖子ID删除帖子
+    public void deletePost(Integer postID){
+        adminDao.deletePost(postID);
+    }
+
+    // 根据评论ID删除评论
+    public void deleteComment(Integer commentID){
+        adminDao.deleteComment(commentID);
+    }
+
+    // 根据回复ID删除回复
+    public void deleteReview(Integer reviewID){
+        adminDao.deleteReview(reviewID);
+    }
 }

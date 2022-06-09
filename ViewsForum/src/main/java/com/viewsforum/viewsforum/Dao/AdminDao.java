@@ -44,4 +44,16 @@ public interface AdminDao {
 
     // 根据管理员ID取消管理员身份
     void deleteAdmin(Integer adminID);
+
+    // 根据主题ID删除主题
+    void deleteTopic(Integer topicID);
+
+    // 根据帖子ID删除帖子
+    void deletePost(Integer postID);
+
+    // 根据评论ID删除评论
+    void deleteComment(Integer commentID);
+
+    // 根据回复ID删除回复
+    void deleteReview(Integer reviewID);
 }
