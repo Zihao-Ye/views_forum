@@ -1,12 +1,12 @@
 spring:
-  datasource:
-    url: jdbc:mysql://127.0.0.1:3306/j2ee_forum
-    username: root
-    password: BUAAYZH2001
 #  datasource:
-#    url: jdbc:mysql://47.94.54.192:3306
-#    username: yanlun
-#    password: yanlun2022
+#    url: jdbc:mysql://127.0.0.1:3306/j2ee_forum
+#    username: root
+#    password: BUAAYZH2001
+  datasource:
+    url: jdbc:mysql://47.94.54.192:3306/yanlun
+    username: yanlun
+    password: yanlun2022
   jpa:
     hibernate:
       ddl-auto: update
@@ -25,8 +25,8 @@ spring:
     multipart:
       max-file-size: 100MB
       max-request-size: 200MB
-#      location: /home/viewsForum/file
-      location: C:\Users\11604\Desktop\大三下\JavaEE架构\大作业\测试图片
+      location: /home/viewsForum/file
+#      location: C:\Users\11604\Desktop\大三下\JavaEE架构\大作业\测试图片
       enabled: true
 mybatis:
   mapper-locations: classpath:Mapper/*.xml
@@ -36,8 +36,8 @@ mybatis:
 server:
   tomcat:
     uri-encoding: UTF-8
-  port: 8081
-#  port: 8080
+#  port: 8081
+  port: 8080
   servlet:
     context-path: /api
 logging:
