@@ -63,4 +63,7 @@ public interface UserDao {
 
     // 根据用户ID取关
     void unFollowUserByFollowedID(Integer followerID, Integer followedID);
+
+    // 根据用户ID取消拉黑
+    void unBlackoutUserByBlackedID(Integer blackerID, Integer blackedID);
 }

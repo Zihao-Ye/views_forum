@@ -103,4 +103,9 @@
         delete from user_follow
         where followerid=#{followerID} and followedid=#{followedID}
     </delete>
+    <!-- 根据用户ID取消拉黑-->
+    <delete id="unBlackoutUserByBlackedID" parameterType="Black">
+        delete from black
+        where blackerid=#{blackerID} and blackedid=#{blackedID}
+    </delete>
 </mapper>

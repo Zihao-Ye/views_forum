@@ -379,6 +379,25 @@ public class UserController {
         return map;
     }
 
+    @PostMapping("/unBlackoutUserByBlackedID")//已测试
+    @ApiOperation("取消拉黑用户")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "userID",value = "用户ID",required = true,dataType = "int"),
+            @ApiImplicitParam(name = "blackedID",value = "被拉黑的用户ID",required = true,dataType = "int")
+    })
+    public Map<String,Object> unBlackoutUserByBlackedID(@RequestParam Integer userID,@RequestParam Integer blackedID){
+        Map<String,Object> map=new HashMap<>();
+        try {
+            userService.unBlackoutUserByBlackedID(userID,blackedID);
+            map.put("success",true);
+        }catch (Exception e){
+            log.error(e.getMessage());
+            map.put("success",false);
+            map.put("msg","INTERNAL_ERROR");
+        }
+        return map;
+    }
+
     @GetMapping("/isFollowUser")//已测试
     @ApiOperation("查询是否已关注用户")
     @ApiImplicitParams({

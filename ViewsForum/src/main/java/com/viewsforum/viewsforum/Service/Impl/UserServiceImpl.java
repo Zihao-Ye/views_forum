@@ -105,4 +105,9 @@ public class UserServiceImpl implements UserService {
     public void unFollowUserByFollowedID(Integer followerID, Integer followedID){
         userDao.unFollowUserByFollowedID(followerID,followedID);
     }
+
+    // 根据用户ID取消拉黑
+    public void unBlackoutUserByBlackedID(Integer blackerID, Integer blackedID){
+        userDao.unBlackoutUserByBlackedID(blackerID,blackedID);
+    }
 }
