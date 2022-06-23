@@ -35,8 +35,13 @@ import java.util.concurrent.atomic.AtomicInteger;
 @ServerEndpoint(value = "/websocket/{uid}")
 @Component
 public class SocketController {
+
+    private static ChattingService chattingService;
+
     @Autowired
-    private ChattingService chattingService;
+    public void setChattingService(ChattingService chattingService){
+        SocketController.chattingService=chattingService;
+    }
 
     private static final ConcurrentHashMap<String, Session> SESSION_POOLS = new ConcurrentHashMap<>();
     private static final AtomicInteger ONLINE_NUM = new AtomicInteger();
@@ -69,22 +74,23 @@ public class SocketController {
     @OnMessage
     public void onMessage(String message, @PathParam(value = "uid") String uid) {
 //        log.info("Client:[{}]， Message: [{}]", uid, message);
-        System.out.println("message received!");
-        System.out.println(message);
+//        System.out.println("message received!");
+//        System.out.println(message);
         // 接收并解析前端消息并加上时间，最后根据是否有接收用户，区别发送所有用户还是单个用户
         try {
             String[] tmp = uid.split("&");
             Integer sendID = Integer.parseInt(tmp[0]);
             Integer receiveID = Integer.parseInt(tmp[1]);
             String target = tmp[1]+"&"+tmp[0];
-            System.out.println("sendID="+sendID+",receiveID="+receiveID);
+//            System.out.println("sendID="+sendID+",receiveID="+receiveID);
             Chat chat = new Chat();
-            chat.setSendID(sendID);
-            chat.setReceiveID(receiveID);
+            chat.setSendID(receiveID);
+            chat.setReceiveID(sendID);
             chat.setChatContent(message);
             chat.setSendTime(new Timestamp(System.currentTimeMillis()));
             System.out.println(chat);
-
+            chattingService.addNewMessage(chat);
+            System.out.println("message stored!");
             if (SESSION_POOLS.containsKey(target)){
                 sendMsgByUid(chat,target);
 //                log.info("message sent");
@@ -93,11 +99,6 @@ public class SocketController {
             else {
                 System.out.println("target is not online");
             }
-            chattingService.addNewMessage(chat);
-//            storeNewMessage(sendID,receiveID, chat.getChatContent());
-//            log.info("message stored");
-            System.out.println("message stored");
-
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -162,13 +163,13 @@ public class SocketController {
         return map;
     }
 
-    @PostMapping("/chattingMessage")
+    @PostMapping("/getHistoryMessage")
     @ApiOperation("查询私信")
     @ApiImplicitParams({
             @ApiImplicitParam(name="sendID",value = "发送者ID",required = true,dataType = "int"),
             @ApiImplicitParam(name="receiveID",value = "接收者ID",required = true,dataType = "int")
     })
-    public Map<String,Object> getChattingMessage(@RequestParam Integer sendID,@RequestParam Integer receiveID,@RequestParam String chatContent){
+    public Map<String,Object> getChattingMessage(@RequestParam Integer sendID,@RequestParam Integer receiveID){
         Map<String,Object> map=new HashMap<>();
         try{
             List<Chat> chattingList=chattingService.getChattingMessageByUserID(sendID,receiveID);

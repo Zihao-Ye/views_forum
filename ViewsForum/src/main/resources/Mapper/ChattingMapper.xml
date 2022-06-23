@@ -9,7 +9,7 @@
 
     <select id="getChattingMessageByUserID" parameterType="Integer" resultType="Chat">
         select * from chat
-        where sendid=#{uid} and receiveid=#{toUid}
+        where (sendid=#{uid} and receiveid=#{toUid}) or (sendid=#{toUid} and receiveid=#{uid})
     </select>
 
 </mapper>
