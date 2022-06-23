@@ -299,13 +299,32 @@ public class UserController {
         return map;
     }
 
-    @PostMapping("/unFollowUser")//已测试
+    @PostMapping("/unFollowUserByFollowRecordID")//已测试
     @ApiOperation("取消关注用户")
     @ApiImplicitParam(name = "userFollowID",value = "用户关注ID",required = true,dataType = "int")
-    public Map<String,Object> unFollowUser(@RequestParam Integer userFollowID){
+    public Map<String,Object> unFollowUserByFollowRecordID(@RequestParam Integer userFollowID){
         Map<String,Object> map=new HashMap<>();
         try {
             userService.unFollowUser(userFollowID);
+            map.put("success",true);
+        }catch (Exception e){
+            log.error(e.getMessage());
+            map.put("success",false);
+            map.put("msg","INTERNAL_ERROR");
+        }
+        return map;
+    }
+
+    @PostMapping("/unFollowUserByFollowedID")//已测试
+    @ApiOperation("取消关注用户")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "userID",value = "用户ID",required = true,dataType = "int"),
+            @ApiImplicitParam(name = "followedID",value = "被关注的用户ID",required = true,dataType = "int")
+    })
+    public Map<String,Object> unFollowUserBByFollowedUserID(@RequestParam Integer userID,@RequestParam Integer followedID){
+        Map<String,Object> map=new HashMap<>();
+        try {
+            userService.unFollowUserByFollowedID(userID,followedID);
             map.put("success",true);
         }catch (Exception e){
             log.error(e.getMessage());

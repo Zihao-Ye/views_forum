@@ -58,4 +58,7 @@ public interface UserService {
 
     // 修改用户信息
     void editUserInfoByUserID(Integer userID,String userName,String email,String note);
+
+    // 根据用户ID取关
+    void unFollowUserByFollowedID(Integer followerID, Integer followedID);
 }

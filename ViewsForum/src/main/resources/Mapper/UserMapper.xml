@@ -98,4 +98,9 @@
         set user_name=#{userName},email=#{email},note=#{note}
         where userid=#{userID}
     </update>
+    <!-- 根据用户ID取关-->
+    <delete id="unFollowUserByFollowedID" parameterType="UserFollow">
+        delete from user_follow
+        where followerid=#{followerID} and followedid=#{followedID}
+    </delete>
 </mapper>

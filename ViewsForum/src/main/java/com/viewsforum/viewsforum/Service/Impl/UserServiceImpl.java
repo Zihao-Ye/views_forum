@@ -100,4 +100,9 @@ public class UserServiceImpl implements UserService {
     public void editUserInfoByUserID(Integer userID,String userName,String email,String note){
         userDao.editUserInfoByUserID(userID,userName,email,note);
     }
+
+    // 根据用户ID取关
+    public void unFollowUserByFollowedID(Integer followerID, Integer followedID){
+        userDao.unFollowUserByFollowedID(followerID,followedID);
+    }
 }
