@@ -33,8 +33,4 @@ public class Chat {
     @ApiModelProperty(value = "发送时间")
     private Timestamp sendTime;
 
-    public Chat(Integer receiveID,String chatContent){
-        this.receiveID=receiveID;
-        this.chatContent=chatContent;
-    }
 }

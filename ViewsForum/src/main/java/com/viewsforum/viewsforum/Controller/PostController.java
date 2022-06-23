@@ -52,7 +52,7 @@ public class PostController {
             @ApiImplicitParam(name = "img",value = "图片",required = false,dataType = "MultipartFile"),
             @ApiImplicitParam(name = "hasFile",value = "是否上传图片，0：不上传，1：上传",required = true,dataType = "int")
     })
-    public Map<String,Object> addPost(@RequestParam Integer userID, @RequestParam String postName, @RequestParam Integer topicID,@RequestParam MultipartFile img,@RequestParam Integer hasFile){
+    public Map<String,Object> addPost(@RequestParam Integer userID, @RequestParam String postName, @RequestParam Integer topicID,@RequestParam(required = false) MultipartFile img,@RequestParam Integer hasFile){
         Map<String,Object> map=new HashMap<>();
         if(!paramChecker.checkPostName(postName)){
             map.put("success",false);
@@ -117,7 +117,7 @@ public class PostController {
             @ApiImplicitParam(name = "img",value = "图片",required = false,dataType = "MultipartFile"),
             @ApiImplicitParam(name = "hasFile",value = "是否上传图片，0：不上传，1：上传",required = true,dataType = "int")
     })
-    public Map<String,Object> addComment(@RequestParam Integer userID, @RequestParam String commentContent, @RequestParam Integer postID,@RequestParam MultipartFile img,@RequestParam Integer hasFile){
+    public Map<String,Object> addComment(@RequestParam Integer userID, @RequestParam String commentContent, @RequestParam Integer postID,@RequestParam(required = false) MultipartFile img,@RequestParam Integer hasFile){
         Map<String,Object> map=new HashMap<>();
         if(!paramChecker.checkContent(commentContent)){
             map.put("success",false);

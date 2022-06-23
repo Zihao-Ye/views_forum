@@ -3,13 +3,13 @@
 <mapper namespace="com.viewsforum.viewsforum.Dao.ChattingDao">
     <!-- 插入新消息条目 -->
     <insert id="addNewMessage" parameterType="Chat">
-        insert into chat(chatid,sendid,receivedid,chat_content,send_time)
-        values (#{chatID},#{sendID},#{receivedID},#{chatContent},#{sendTime})
+        insert into chat(chatid,sendid,receiveid,chat_content,send_time)
+        values (#{chatID},#{sendID},#{receiveID},#{chatContent},#{sendTime})
     </insert>
 
     <select id="getChattingMessageByUserID" parameterType="Integer" resultType="Chat">
         select * from chat
-        where sendid=#{uid} and receivedid=#{toUid}
+        where sendid=#{uid} and receiveid=#{toUid}
     </select>
 
 </mapper>

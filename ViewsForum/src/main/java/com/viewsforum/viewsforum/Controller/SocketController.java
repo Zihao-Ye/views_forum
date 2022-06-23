@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.viewsforum.viewsforum.Entity.Chat;
 import com.viewsforum.viewsforum.Service.ChattingService;
 import com.viewsforum.viewsforum.Utils.Chatting;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
@@ -14,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.websocket.*;
@@ -28,6 +30,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @Slf4j
+@Api(tags = "socket相关接口")
+@RestController("/websocket")
 @ServerEndpoint(value = "/websocket/{uid}")
 @Component
 public class SocketController {
@@ -42,50 +46,60 @@ public class SocketController {
 
     @OnOpen
     public void onOpen(Session session, @PathParam(value = "uid") String uid) {
-        Integer sendID = Integer.parseInt(uid);
         // 将加入连接的用户加入SESSION_POOLS集合
         SESSION_POOLS.put(uid, session);
         // 在线用户+1
         ONLINE_NUM.incrementAndGet();
-        sendMsgByUid(new Chat(sendID,"connection succeed!"));
+        System.out.println("connection succeed!");
+//        sendMsgByUid(new Chat(sendID,"connection succeed!"));
 //        sendToAll(new Chatting(uid,"connection succeed!",getOnlineUsers()));
     }
 
     @OnClose
     public void onClose(@PathParam(value = "uid") String uid) {
-        Integer sendID = Integer.parseInt(uid);
         // 将加入连接的用户移除SESSION_POOLS集合
         SESSION_POOLS.remove(uid);
         // 在线用户-1
         ONLINE_NUM.decrementAndGet();
-        sendMsgByUid(new Chat(sendID,"connection closed!"));
+        System.out.println("connection closed!");
+//        sendMsgByUid(new Chat(sendID,"connection closed!"));
 //        sendToAll(new Chatting(uid,"connection closed!",getOnlineUsers()));
     }
 
     @OnMessage
     public void onMessage(String message, @PathParam(value = "uid") String uid) {
-        log.info("Client:[{}]， Message: [{}]", uid, message);
-
+//        log.info("Client:[{}]， Message: [{}]", uid, message);
+        System.out.println("message received!");
+        System.out.println(message);
         // 接收并解析前端消息并加上时间，最后根据是否有接收用户，区别发送所有用户还是单个用户
-        Chatting chatting = JSONObject.parseObject(message, Chatting.class);
-        String Time = chatting.getTime();
-        Timestamp timestamp=new Timestamp(System.currentTimeMillis());
         try {
-            String[] tmp = uid.split("#");
+            String[] tmp = uid.split("&");
             Integer sendID = Integer.parseInt(tmp[0]);
             Integer receiveID = Integer.parseInt(tmp[1]);
+            String target = tmp[1]+"&"+tmp[0];
+            System.out.println("sendID="+sendID+",receiveID="+receiveID);
             Chat chat = new Chat();
             chat.setSendID(sendID);
             chat.setReceiveID(receiveID);
             chat.setChatContent(message);
             chat.setSendTime(new Timestamp(System.currentTimeMillis()));
-            chattingService.addNewMessage(chat);
-            log.info("message stored");
+            System.out.println(chat);
 
-            sendMsgByUid(chat);
-            log.info("message sent");
+            if (SESSION_POOLS.containsKey(target)){
+                sendMsgByUid(chat,target);
+//                log.info("message sent");
+                System.out.println("message sent");
+            }
+            else {
+                System.out.println("target is not online");
+            }
+            chattingService.addNewMessage(chat);
+//            storeNewMessage(sendID,receiveID, chat.getChatContent());
+//            log.info("message stored");
+            System.out.println("message stored");
+
         }catch (Exception e){
-            log.error(e.getMessage());
+            e.printStackTrace();
         }
 
         // 如果有接收用户就发送单个用户
@@ -98,8 +112,8 @@ public class SocketController {
         SESSION_POOLS.forEach((k, session) ->  sendMessage(session, content));
     }
 
-    private void sendMsgByUid(Chat chat) {
-        sendMessage(SESSION_POOLS.get(String.valueOf(chat.getReceiveID())), JSONObject.toJSONString(chat));
+    private void sendMsgByUid(Chat chat,String target) {
+        sendMessage(SESSION_POOLS.get(target), chat.getChatContent());
     }
 
     private void sendMessage(Session session, String content){
@@ -123,14 +137,14 @@ public class SocketController {
         return date.format(System.currentTimeMillis());
     }
 
-    @PostMapping("/")
+    @PostMapping("/chattingReceive")
     @ApiOperation("接收私信")
     @ApiImplicitParams({
             @ApiImplicitParam(name="sendID",value = "发送者ID",required = true,dataType = "int"),
             @ApiImplicitParam(name="receiveID",value = "接收者ID",required = true,dataType = "int"),
             @ApiImplicitParam(name="chatContent",value = "私聊内容",required = true,dataType = "String")
     })
-    public Map<String,Object> addNewMessage(@RequestParam Integer sendID,@RequestParam Integer receiveID,@RequestParam String chatContent){
+    public Map<String,Object> storeNewMessage(@RequestParam Integer sendID,@RequestParam Integer receiveID,@RequestParam String chatContent){
         Map<String,Object> map=new HashMap<>();
         try{
             Chat chat = new Chat();
@@ -148,7 +162,7 @@ public class SocketController {
         return map;
     }
 
-    @PostMapping("/")
+    @PostMapping("/chattingMessage")
     @ApiOperation("查询私信")
     @ApiImplicitParams({
             @ApiImplicitParam(name="sendID",value = "发送者ID",required = true,dataType = "int"),
