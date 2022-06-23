@@ -17,7 +17,7 @@ import java.sql.Timestamp;
 @ApiModel(description = "私聊")
 public class Chat {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @ApiModelProperty(value = "聊天ID")
     private Integer chatID;
 
